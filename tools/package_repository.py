@@ -45,9 +45,9 @@ def package(root: Path, output: Path, base_url: str | None, repo_url: str | None
             IsHide=False,
             IsTestingExclusive=False,
             LastUpdate=int(time.time()),
-            DownloadLinkInstall=f"{base_url}/latest.zip",
-            DownloadLinkUpdate=f"{base_url}/latest.zip",
-            DownloadLinkTesting=f"{base_url}/latest.zip",
+            DownloadLinkInstall=f"{base_url}/latest.zip?v={manifest['AssemblyVersion']}",
+            DownloadLinkUpdate=f"{base_url}/latest.zip?v={manifest['AssemblyVersion']}",
+            DownloadLinkTesting=f"{base_url}/latest.zip?v={manifest['AssemblyVersion']}",
         )
         index = output / "repo.json"
         index.write_text(json.dumps([entry], indent=2) + "\n", encoding="utf-8")

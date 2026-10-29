@@ -16,6 +16,8 @@ public sealed class Plugin : IDalamudPlugin
     [PluginService] internal static ICommandManager Commands { get; private set; } = null!;
     [PluginService] internal static IFramework Framework { get; private set; } = null!;
     [PluginService] internal static IPlayerState Player { get; private set; } = null!;
+    [PluginService] internal static IClientState Client { get; private set; } = null!;
+    [PluginService] internal static IObjectTable Objects { get; private set; } = null!;
     [PluginService] internal static ICondition Condition { get; private set; } = null!;
     [PluginService] internal static IGameGui Gui { get; private set; } = null!;
     [PluginService] internal static IDataManager Data { get; private set; } = null!;
@@ -24,12 +26,14 @@ public sealed class Plugin : IDalamudPlugin
     [PluginService] internal static IPluginLog Log { get; private set; } = null!;
 
     private static readonly JsonSerializerOptions Json = new() { WriteIndented = true };
+    private static readonly string PluginVersion = typeof(Plugin).Assembly.GetName().Version?.ToString() ?? "unknown";
     private bool open = true;
     private bool applyKeys = true;
     private float size = 1;
     private Vector2 viewport = new(1920, 1080);
     private int pending;
     private bool busy;
+    private ulong characterId;
     private string status = "Log in as your level 100 Monk, then press Apply Monk layout.";
     private readonly string compatibilityError;
     private readonly string directory;
@@ -53,9 +57,18 @@ public sealed class Plugin : IDalamudPlugin
     }
 
     private void Open() => open = true;
-    private string CharacterDirectory => Path.Combine(directory, Player.ContentId.ToString("X16"));
+    private string CharacterDirectory => characterId != 0
+        ? Path.Combine(directory, characterId.ToString("X16"))
+        : throw new InvalidOperationException("The character identity has not been verified yet. No settings were changed.");
     private string OriginalPath => Path.Combine(CharacterDirectory, "original-settings.json");
     private string StatePath => Path.Combine(CharacterDirectory, "install-state.json");
+
+    private static PlayerSession ReadSession()
+    {
+        var local = Objects.LocalPlayer;
+        return new(Client.IsLoggedIn, local != null, local?.ClassJob.RowId ?? 0, local?.Level ?? 0,
+            Player.IsLoaded, Player.ClassJob.RowId, Player.EffectiveLevel, Player.IsLevelSynced, Player.ContentId);
+    }
 
     private void Draw()
     {
@@ -64,7 +77,8 @@ public sealed class Plugin : IDalamudPlugin
         ImGui.SetNextWindowSize(new Vector2(740, 650), ImGuiCond.FirstUseEver);
         if (ImGui.Begin("Monk Layout", ref open))
         {
-            ImGui.TextUnformatted("Level 100 Monk | Keyboard and mouse | PvE");
+            ImGui.TextUnformatted($"Monk Layout {PluginVersion} | Keyboard and mouse | PvE");
+            ImGui.TextWrapped(ReadSession().Summary);
             ImGui.Separator();
             ImGui.TextWrapped("Apply a complete Monk setup: three horizontal hotbars, paired form skills, nearby burst buttons, and centered job gauges. The preset uses HUD layout 4 and Monk hotbars 1-3. Bars 1-3 become unshared; sharing is a character-wide setting.");
             ImGui.Spacing();
@@ -80,7 +94,7 @@ public sealed class Plugin : IDalamudPlugin
             ImGui.BeginDisabled(busy || pending != 0 || compatibilityError.Length > 0);
             if (ImGui.Button("Apply Monk layout", new Vector2(225, 36))) pending = 1;
             ImGui.SameLine();
-            ImGui.BeginDisabled(!Player.IsLoaded || !File.Exists(OriginalPath));
+            ImGui.BeginDisabled(characterId == 0 || !File.Exists(OriginalPath));
             if (ImGui.Button("Restore original settings", new Vector2(225, 36))) pending = 2;
             ImGui.EndDisabled();
             ImGui.EndDisabled();
@@ -114,12 +128,19 @@ public sealed class Plugin : IDalamudPlugin
 
     private void OnUpdate(IFramework _)
     {
+        if (open || pending != 0)
+        {
+            try { characterId = compatibilityError.Length == 0 ? NativeLayout.GetLoadedCharacterId(ReadSession()) : 0; }
+            catch { characterId = 0; } // The operation below reports any readiness error.
+        }
         if (pending == 0 || busy) return;
         var command = pending; pending = 0; busy = true;
         try
         {
             if (compatibilityError.Length > 0) throw new InvalidOperationException(compatibilityError);
-            NativeLayout.CheckReady(Player, Condition, Gui, command == 1);
+            var session = ReadSession();
+            Log.Information("Monk Layout {Version}: {Session}", PluginVersion, session.Summary);
+            characterId = NativeLayout.CheckReady(session, Condition, Gui, command == 1);
             Directory.CreateDirectory(CharacterDirectory);
             if (command == 1) Apply(); else Restore();
         }
@@ -139,9 +160,9 @@ public sealed class Plugin : IDalamudPlugin
         var globalScale = NativeLayout.GetHudGlobalScale(Gui);
         _ = LayoutPlan.GetGeometry(viewport.X, viewport.Y, size, globalScale);
         var keys = applyKeys ? NativeLayout.KeyChanges() : new Dictionary<int, Binding>();
-        var before = NativeLayout.Capture(Player, GameConfig);
+        var before = NativeLayout.Capture(characterId, GameConfig);
         var previousState = LoadState();
-        if (File.Exists(OriginalPath)) NativeLayout.ValidateBackup(ReadBackup(OriginalPath), Player.ContentId);
+        if (File.Exists(OriginalPath)) NativeLayout.ValidateBackup(ReadBackup(OriginalPath), characterId);
         else SaveJson(OriginalPath, before, false);
         var transactionPath = Path.Combine(CharacterDirectory, $"before-apply-{DateTime.UtcNow:yyyyMMdd-HHmmss-fffffff}.json");
         SaveJson(transactionPath, before, false);
@@ -163,7 +184,7 @@ public sealed class Plugin : IDalamudPlugin
         {
             try
             {
-                NativeLayout.Restore(before, keys.Keys, GameConfig, Player, applyKeys, true);
+                NativeLayout.Restore(before, keys.Keys, GameConfig, characterId, applyKeys, true);
                 SaveJson(StatePath, previousState, true);
             }
             catch (Exception restoreError)
@@ -182,7 +203,7 @@ public sealed class Plugin : IDalamudPlugin
         var state = LoadState();
         var recovery = Path.Combine(CharacterDirectory, "recovery-settings.json");
         var backup = ReadBackup(File.Exists(recovery) ? recovery : OriginalPath);
-        NativeLayout.Restore(backup, state.KeyInputsChanged, GameConfig, Player, state.KeysApplied);
+        NativeLayout.Restore(backup, state.KeyInputsChanged, GameConfig, characterId, state.KeysApplied);
         if (File.Exists(recovery)) File.Delete(recovery);
         SaveJson(StatePath, new InstallState(), true);
         status = "Original settings restored and hotbars verified.";

@@ -29,12 +29,9 @@ internal static unsafe class NativeLayout
         return ((AtkUnitBase*)addon.Address)->IsScalingWithGlobalUIScale ? AtkUnitBase.GetGlobalUIScale() : 1;
     }
 
-    internal static void CheckReady(IPlayerState player, ICondition condition, IGameGui gui, bool require100 = true)
+    internal static ulong CheckReady(PlayerSession session, ICondition condition, IGameGui gui, bool require100 = true)
     {
-        if (!player.IsLoaded || player.ContentId == 0 || player.ClassJob.RowId != 20)
-            throw new InvalidOperationException("Log in and switch to Monk first.");
-        if (require100 && (player.Level < 100 || player.EffectiveLevel < 100))
-            throw new InvalidOperationException("Use your level 100 Monk outside level sync.");
+        session.CheckReady(require100);
         if (condition[Dalamud.Game.ClientState.Conditions.ConditionFlag.InCombat]
             || condition[Dalamud.Game.ClientState.Conditions.ConditionFlag.BoundByDuty]
             || condition[Dalamud.Game.ClientState.Conditions.ConditionFlag.OccupiedInCutSceneEvent])
@@ -61,6 +58,21 @@ internal static unsafe class NativeLayout
         var layout = hud->ActiveDataSet->CurrentHudLayout;
         foreach (var name in EssentialHud)
             if (Find(layout, name) == null) throw new InvalidOperationException($"The current saved HUD is missing {name}. Save that HUD in the game, close the editor, then try again.");
+        var characterId = PlayerSession.ResolveContentId(session.StateContentId, hud->CharacterContentId, bars->CharacterContentId);
+        if (characterId == 0)
+            throw new InvalidOperationException("Monk detected, but the character identity in the HUD and hotbar settings has not finished loading or does not agree. No settings were changed. Wait a moment, then try again.");
+        return characterId;
+    }
+
+    internal static ulong GetLoadedCharacterId(PlayerSession session)
+    {
+        if (!session.IsLoggedIn || !session.HasLocalPlayer) return 0;
+        var fw = NativeFramework.Instance();
+        if (fw == null || fw->GameVersionString != GameVersion) return 0;
+        var hud = AddonConfig.Instance();
+        var bars = RaptureHotbarModule.Instance();
+        if (hud == null || !hud->IsLoaded || bars == null || !bars->ModuleReady || !bars->DatFileLoadedSuccessfully) return 0;
+        return PlayerSession.ResolveContentId(session.StateContentId, hud->CharacterContentId, bars->CharacterContentId);
     }
 
     internal static List<ResolvedAction> ResolveActions(IDataManager data)
@@ -105,7 +117,7 @@ internal static unsafe class NativeLayout
 
     private static Stroke ToStroke(KeySetting key) => new((byte)key.Key, (byte)key.KeyModifier);
 
-    internal static Backup Capture(IPlayerState player, IGameConfig config)
+    internal static Backup Capture(ulong characterId, IGameConfig config)
     {
         var hud = AddonConfig.Instance();
         var original = hud->ActiveDataSet->CurrentHudLayout;
@@ -115,7 +127,7 @@ internal static unsafe class NativeLayout
         var keys = UIInputData.Instance()->GetKeybindSpan();
         var result = new Backup
         {
-            StructHash = StructHash, CharacterId = player.ContentId, OriginalLayout = original,
+            StructHash = StructHash, CharacterId = characterId, OriginalLayout = original,
             HudLayouts = MemoryMarshal.AsBytes(hud->ActiveDataSet->HudLayoutConfigEntries).ToArray(),
             MonkSlots = SavedSlots(20), SharedSlots = SavedSlots(0),
             KeyCount = keys.Length, Keybinds = MemoryMarshal.AsBytes(keys).ToArray()
@@ -126,7 +138,7 @@ internal static unsafe class NativeLayout
             result.Ui.Add(option, value);
         }
         if (config.UiControl.TryGet("DirectChat", out uint direct)) result.Control.Add("DirectChat", direct);
-        ValidateBackup(result, player.ContentId);
+        ValidateBackup(result, characterId);
         return result;
     }
 
@@ -144,7 +156,7 @@ internal static unsafe class NativeLayout
 
     internal static void ValidateBackup(Backup backup, ulong character)
     {
-        if (backup.Schema != 1 || backup.StructHash != StructHash || backup.CharacterId != character
+        if (character == 0 || backup.Schema != 1 || backup.StructHash != StructHash || backup.CharacterId != character
             || backup.OriginalLayout is < 0 or > 3 || backup.HudLayouts.Length != 448 * sizeof(AddonConfigEntry)
             || backup.KeyCount != UIInputData.Instance()->NumKeybinds || backup.Keybinds.Length != backup.KeyCount * sizeof(Keybind))
             throw new InvalidOperationException("The backup does not match this character or the installed game data structures.");
@@ -222,9 +234,9 @@ internal static unsafe class NativeLayout
             }
     }
 
-    internal static void Restore(Backup backup, IEnumerable<int> keyIds, IGameConfig config, IPlayerState player, bool restoreKeyboard, bool repairShared = false)
+    internal static void Restore(Backup backup, IEnumerable<int> keyIds, IGameConfig config, ulong characterId, bool restoreKeyboard, bool repairShared = false)
     {
-        ValidateBackup(backup, player.ContentId);
+        ValidateBackup(backup, characterId);
         var ids = keyIds.Distinct().ToArray();
         if (ids.Any(id => id < 0 || id >= backup.KeyCount)) throw new InvalidOperationException("The keybind restore list is invalid.");
         var hud = AddonConfig.Instance();

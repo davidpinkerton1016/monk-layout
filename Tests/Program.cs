@@ -74,4 +74,47 @@ var bytes = Enumerable.Range(0, 16128).Select(i => (byte)(i * 73)).ToArray();
 var backup = new Backup { CharacterId = 0x1122334455667788, HudLayouts = bytes, Keybinds = bytes[..1100], KeyCount = 100, Ui = new() { ["HotbarCommon01"] = 1 } };
 var roundtrip = JsonSerializer.Deserialize<Backup>(JsonSerializer.Serialize(backup))!;
 Check(roundtrip.CharacterId == backup.CharacterId && roundtrip.HudLayouts.SequenceEqual(bytes) && roundtrip.Keybinds.SequenceEqual(backup.Keybinds), "Backup serialization must retain raw bytes and 64-bit character identity.");
-Console.WriteLine($"PASS: {checks} layout, keyboard conflict, restore and backup checks.");
+
+var monk = new PlayerSession(true, true, 20, 100, true, 20, 100, false, backup.CharacterId);
+void Allow(PlayerSession session, bool apply = true)
+{
+    session.CheckReady(apply);
+    checks++;
+}
+Allow(monk);
+// Regression: a logged-in Monk must not be rejected just because the separate
+// PlayerState service is absent or still shows the job before a gearset change.
+Allow(monk with { StateLoaded = false, StateJobId = 0, EffectiveLevel = 0, StateContentId = 0 });
+Allow(monk with { StateJobId = 2, EffectiveLevel = 0 });
+Reject(() => (monk with { IsLoggedIn = false }).CheckReady(true), "The character-select screen must not permit an apply.");
+Reject(() => (monk with { HasLocalPlayer = false }).CheckReady(true), "Loading screens must not permit an apply.");
+Reject(() => (monk with { JobId = 2 }).CheckReady(true), "Pugilist without a soul crystal must not edit Monk hotbars.");
+Reject(() => (monk with { JobId = 19 }).CheckReady(true), "A different active job must block edits even if PlayerState still says Monk.");
+Reject(() => (monk with { JobId = 0 }).CheckReady(true), "An unreadable active job must block edits.");
+Reject(() => (monk with { Level = 99 }).CheckReady(true), "A Monk below level 100 must not apply the preset.");
+Reject(() => (monk with { EffectiveLevel = 90 }).CheckReady(true), "A level-synced Monk must not apply the preset.");
+Reject(() => (monk with { IsLevelSynced = true }).CheckReady(true), "Explicit level sync must block applying.");
+Allow(monk with { Level = 90, EffectiveLevel = 90, IsLevelSynced = true }, false);
+Allow(monk with { StateLoaded = false, StateJobId = 0, StateContentId = 0 }, false);
+var characterA = backup.CharacterId;
+var characterB = characterA + 1;
+Check(PlayerSession.ResolveContentId(characterA, characterA, characterA) == characterA, "Known identity must retain all 64 bits.");
+Check(PlayerSession.ResolveContentId(0, characterA, characterA) == characterA, "Matching HUD and hotbar identities must recover from missing PlayerState.");
+Check(PlayerSession.ResolveContentId(characterA, 0, 0) == characterA, "A valid PlayerState identity does not require redundant file identities.");
+Check(PlayerSession.ResolveContentId(characterA, characterB, characterA) == 0, "A stale HUD from another character must block backup and restore.");
+Check(PlayerSession.ResolveContentId(characterA, characterA, characterB) == 0, "A stale hotbar file must block backup and restore.");
+Check(PlayerSession.ResolveContentId(0, characterA, characterB) == 0, "Fallback identities must agree.");
+Check(PlayerSession.ResolveContentId(0, 0, characterA) == 0, "One unconfirmed file identity is insufficient.");
+Check(PlayerSession.ResolveContentId(0, characterA, 0) == 0, "Missing hotbar identity must block fallback.");
+Check(PlayerSession.ResolveContentId(0, 0, 0) == 0, "A zero-ID character directory must never be selected.");
+Check(monk.Summary.Contains("Monk (20)") && !monk.Summary.Contains(characterA.ToString()), "The visible detection status must identify the job without exposing character identity.");
+try
+{
+    (monk with { JobId = 2 }).CheckReady(true);
+    throw new Exception("Pugilist was accepted.");
+}
+catch (InvalidOperationException ex)
+{
+    Check(ex.Message.Contains("Soul of the Monk"), "Pugilist detection must explain how to equip the actual Monk job.");
+}
+Console.WriteLine($"PASS: {checks} layout, keyboard conflict, restore, backup and character detection checks.");
