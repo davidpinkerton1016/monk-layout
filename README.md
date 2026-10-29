@@ -17,11 +17,15 @@ https://raw.githubusercontent.com/davidpinkerton1016/monk-layout/main/repo.json
 
 Dalamud handles the plugin installation and updates. The setup window includes a skill preview and an option to keep your existing keyboard bindings.
 
-## Version 1.1.1.0
+## Version 1.1.2.0
+
+Apply now saves the live HUD through the game's layout switch before checking stored HUD entries. The earlier check ran before that save and could stop at a missing `_ActionBar` entry. The plugin returns to the starting layout before capturing its backup. Restore no longer requires the current layout to contain all preset elements.
+
+To update an existing installation, open `/xlplugins` and update Monk Layout. Confirm the setup window shows **1.1.2.0**, then try applying again.
+
+### Version 1.1.1.0
 
 Job detection now reads the active character instead of relying on the separate PlayerState service. A missing or stale PlayerState job no longer rejects a logged-in Monk. When its character ID is unavailable, the loaded HUD and hotbar file identities must agree before any backup or edit. The window shows the version and detected login, job, level and player-data state. Login, loading and incorrect-job errors now have separate messages.
-
-To update an existing installation, open `/xlplugins` and update Monk Layout. Confirm the setup window shows **1.1.1.0**, then try applying again.
 
 ## Layout
 

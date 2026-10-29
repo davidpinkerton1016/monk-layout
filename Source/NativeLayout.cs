@@ -55,9 +55,6 @@ internal static unsafe class NativeLayout
         var input = UIInputData.Instance();
         if (input == null || input->NumKeybinds < 100 || input->NumKeybinds > 4096 || input->Keybinds == null)
             throw new InvalidOperationException("The keyboard configuration has not loaded yet.");
-        var layout = hud->ActiveDataSet->CurrentHudLayout;
-        foreach (var name in EssentialHud)
-            if (Find(layout, name) == null) throw new InvalidOperationException($"The current saved HUD is missing {name}. Save that HUD in the game, close the editor, then try again.");
         var characterId = PlayerSession.ResolveContentId(session.StateContentId, hud->CharacterContentId, bars->CharacterContentId);
         if (characterId == 0)
             throw new InvalidOperationException("Monk detected, but the character identity in the HUD and hotbar settings has not finished loading or does not agree. No settings were changed. Wait a moment, then try again.");
@@ -121,9 +118,14 @@ internal static unsafe class NativeLayout
     {
         var hud = AddonConfig.Instance();
         var original = hud->ActiveDataSet->CurrentHudLayout;
-        // A layout switch flushes the live HUD into its stored layout. Return immediately.
-        hud->ChangeHudLayout((uint)(original == 0 ? 1 : 0));
-        hud->ChangeHudLayout((uint)original);
+        // The live HUD can exist before its stored layout is populated. Flush it
+        // before checking saved entries. Always return to the starting layout.
+        // Restore never requires the current layout to contain these elements.
+        try { hud->ChangeHudLayout((uint)(original == 0 ? 1 : 0)); }
+        finally { hud->ChangeHudLayout((uint)original); }
+        if (hud->ActiveDataSet->CurrentHudLayout != original)
+            throw new InvalidOperationException("The game did not return to your starting HUD after saving it. No Monk preset was applied.");
+        ValidateSavedHud(original);
         var keys = UIInputData.Instance()->GetKeybindSpan();
         var result = new Backup
         {
@@ -140,6 +142,20 @@ internal static unsafe class NativeLayout
         if (config.UiControl.TryGet("DirectChat", out uint direct)) result.Control.Add("DirectChat", direct);
         ValidateBackup(result, characterId);
         return result;
+    }
+
+    private static void ValidateSavedHud(int layout)
+    {
+        var entries = AddonConfig.Instance()->ActiveDataSet->HudLayoutConfigEntries.Slice(layout * EntriesPerLayout, EntriesPerLayout);
+        foreach (var name in EssentialHud)
+        {
+            if (Find(layout, name) != null) continue;
+            var populated = 0;
+            foreach (var entry in entries) if (entry.AddonNameHash != 0) populated++;
+            // Keep the failed lookup read-only. Never invent records or change
+            // native offsets to make an incompatible HUD table appear valid.
+            throw new InvalidOperationException($"HUD {layout + 1} still has no saved {name} after automatically saving the live HUD ({populated}/{EntriesPerLayout} entries). No Monk preset was applied.");
+        }
     }
 
     private static SlotBackup[] SavedSlots(int group)

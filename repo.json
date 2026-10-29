@@ -4,9 +4,9 @@
     "Name": "Monk Layout",
     "Punchline": "Apply and restore a level 100 Monk HUD and keyboard hotbars.",
     "Description": "One-time setup for a level 100 Monk on keyboard and mouse. Builds HUD 4, fills Monk hotbars 1-3 and optionally sets keyboard bindings. Keeps a local backup and offers Restore. Open with /monklayout.",
-    "Changelog": "Fix character detection using the active player job. Support missing PlayerState data with matching HUD and hotbar identities. Show detected login, job, level and plugin version, with specific readiness errors.",
+    "Changelog": "Save the live HUD before checking saved hotbar entries. Fix the premature missing _ActionBar error and allow restoring a backup even when the current HUD is incomplete. Retain active-character Monk detection from 1.1.1.0.",
     "InternalName": "MonkLayout",
-    "AssemblyVersion": "1.1.1.0",
+    "AssemblyVersion": "1.1.2.0",
     "ApplicableVersion": "2026.10.16.0000.0000",
     "DalamudApiLevel": 15,
     "LoadRequiredState": 0,
@@ -21,9 +21,9 @@
     "RepoUrl": "https://github.com/davidpinkerton1016/monk-layout",
     "IsHide": false,
     "IsTestingExclusive": false,
-    "LastUpdate": 1793297254,
-    "DownloadLinkInstall": "https://raw.githubusercontent.com/davidpinkerton1016/monk-layout/main/latest.zip?v=1.1.1.0",
-    "DownloadLinkUpdate": "https://raw.githubusercontent.com/davidpinkerton1016/monk-layout/main/latest.zip?v=1.1.1.0",
-    "DownloadLinkTesting": "https://raw.githubusercontent.com/davidpinkerton1016/monk-layout/main/latest.zip?v=1.1.1.0"
+    "LastUpdate": 1793297892,
+    "DownloadLinkInstall": "https://raw.githubusercontent.com/davidpinkerton1016/monk-layout/main/latest.zip?v=1.1.2.0",
+    "DownloadLinkUpdate": "https://raw.githubusercontent.com/davidpinkerton1016/monk-layout/main/latest.zip?v=1.1.2.0",
+    "DownloadLinkTesting": "https://raw.githubusercontent.com/davidpinkerton1016/monk-layout/main/latest.zip?v=1.1.2.0"
   }
 ]
