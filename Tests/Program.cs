@@ -117,4 +117,55 @@ catch (InvalidOperationException ex)
 {
     Check(ex.Message.Contains("Soul of the Monk"), "Pugilist detection must explain how to equip the actual Monk job.");
 }
-Console.WriteLine($"PASS: {checks} layout, keyboard conflict, restore, backup and character detection checks.");
+
+var whm = JobPreset.WhiteMage;
+var whmActions = whm.Actions.Where(a => a.Action != null).ToArray();
+var whmBound = whmActions.Where(a => a.Bind).ToArray();
+Check(whm.Actions.Length == 36 && whmActions.Length == 35, "White Mage must populate 35 actions in three regular hotbars.");
+Check(whmBound.Length == 32 && whmBound.Select(a => a.Shortcut).Distinct().Count() == 32, "White Mage must have 32 distinct keyboard shortcuts.");
+Check(whmActions.Select(a => a.Action).Distinct().Count() == 35, "White Mage must not duplicate or omit a slot through action replacement.");
+string[] expectedWhm = ["Stone", "Aero", "Cure", "Medica", "Raise", "Cure II", "Presence of Mind", "Regen", "Cure III", "Aetherial Shift", "Holy", "Medica II", "Benediction", "Afflatus Solace", "Asylum", "Assize", "Thin Air", "Tetragrammaton", "Divine Benison", "Plenary Indulgence", "Afflatus Misery", "Afflatus Rapture", "Temperance", "Aquaveil", "Liturgy of the Bell", "Glare IV", "Divine Caress", "Repose", "Esuna", "Lucid Dreaming", "Swiftcast", "Surecast", "Rescue", "Sprint", "Limit Break"];
+Check(whmActions.Select(a => a.Action!).ToHashSet().SetEquals(expectedWhm), "White Mage must include every current base action, healer role action and common combat action.");
+Check(whm.Actions.Take(3).Select(a => a.Label).SequenceEqual(new[] { "Glare III", "Dia", "Holy III" }), "White Mage damage must use the familiar 1-3 keys.");
+Check(whm.Actions.Skip(3).Take(2).Select(a => a.Action).SequenceEqual(new[] { "Afflatus Solace", "Afflatus Rapture" }), "Both lily heals must have unmodified shortcuts.");
+Check(whmActions.Single(a => a.Action == "Aetherial Shift").Shortcut == occupied.Single(a => a.Action == "Thunderclap").Shortcut, "Movement must stay on X across both jobs.");
+Check(whmActions.Single(a => a.Action == "Sprint").Shortcut == occupied.Single(a => a.Action == "Sprint").Shortcut, "Sprint must stay on V across both jobs.");
+Check(whmActions.Single(a => a.Action == "Surecast").Shortcut == occupied.Single(a => a.Action == "Arm's Length").Shortcut, "Knockback protection must stay on Shift+X across jobs.");
+Check(whmActions.Where(a => !a.Bind).Select(a => a.Action).ToHashSet().SetEquals(new[] { "Cure", "Medica", "Repose" }), "Less-used actions must stay available for clicking without taking clipboard shortcuts.");
+Check(whmActions.Where(a => !a.Bind).All(a => a.Shortcut == default && a.ShortcutText == "Click"), "Click-only actions must never synthesize a keyboard shortcut.");
+Check(!whmBound.Any(a => a.Shortcut.Modifier == 2 && "ZXCV".Contains((char)a.Shortcut.Key)), "White Mage must protect Ctrl+Z/X/C/V.");
+var whmKeys = LayoutPlan.PlanKeyChanges(original.Values, new HashSet<int> { 320 }, whm.Actions);
+var monkKeys = LayoutPlan.PlanKeyChanges(original.Values, new HashSet<int> { 320 }, JobPreset.Monk.Actions);
+Check(whmKeys.OrderBy(k => k.Key).SequenceEqual(monkKeys.OrderBy(k => k.Key)), "Changing between presets must retain the same global hotbar keyboard map.");
+Check(!whmKeys.ContainsKey(402), "White Mage must preserve existing clipboard bindings.");
+Check(whm.JobId == 24 && whm.BaseClassId == 6 && whm.HudLayout == 2, "White Mage must edit job 24 in HUD 3.");
+Check(JobPreset.Monk.JobId == 20 && JobPreset.Monk.HudLayout == 3 && JobPreset.Monk.BackupFolder == "", "Existing Monk job, HUD 4 and backup paths must remain compatible.");
+Check(whm.BackupFolder.Length > 0 && whm.BackupFolder != JobPreset.Monk.BackupFolder, "Each job must retain its own original backup and restore index.");
+Check(whm.Gauges.SequenceEqual(new[] { "JobHudWHM0" }), "White Mage must use the lily gauge instead of Monk gauges.");
+var whiteMage = monk with { JobId = 24, StateJobId = 24 };
+whiteMage.CheckReady(true, whm); checks++;
+(whiteMage with { StateLoaded = false, StateJobId = 0, EffectiveLevel = 0, StateContentId = 0 }).CheckReady(true, whm); checks++;
+(whiteMage with { StateJobId = 20 }).CheckReady(true, whm); checks++;
+Reject(() => monk.CheckReady(true, whm), "White Mage preset must reject a Monk before any native edits.");
+Reject(() => whiteMage.CheckReady(true, JobPreset.Monk), "Monk preset must reject White Mage before any native edits.");
+Reject(() => (whiteMage with { Level = 90 }).CheckReady(true, whm), "The level 100 White Mage preset must reject lower levels.");
+Reject(() => (whiteMage with { IsLevelSynced = true }).CheckReady(true, whm), "White Mage apply must reject level sync.");
+try { (whiteMage with { JobId = 6 }).CheckReady(true, whm); throw new Exception("Conjurer was accepted."); }
+catch (InvalidOperationException ex) { Check(ex.Message.Contains("Soul of the White Mage"), "Conjurer detection must explain the correct soul crystal."); }
+var oldSlots = Enumerable.Range(0, 36).Select(i => new SlotBackup(i / 12, i % 12, 1, (uint)(100 + i))).ToArray();
+var legacyJson = JsonSerializer.Serialize(new { CharacterId = characterA, MonkSlots = oldSlots });
+var legacyBackup = JsonSerializer.Deserialize<Backup>(legacyJson)!;
+legacyBackup.CheckIdentity(characterA, JobPreset.Monk); checks++;
+Check(legacyBackup.JobSlots.SequenceEqual(oldSlots), "Pre-1.3 MonkSlots backups must deserialize without losing any slot.");
+Check(!JsonSerializer.Serialize(legacyBackup).Contains("MonkSlots"), "New backups must use JobSlots while still reading the legacy field.");
+var whmBackup = new Backup { CharacterId = characterA, ClassJobId = 24, TargetLayout = 2, JobSlots = oldSlots };
+var whmRoundtrip = JsonSerializer.Deserialize<Backup>(JsonSerializer.Serialize(whmBackup))!;
+whmRoundtrip.CheckIdentity(characterA, whm); checks++;
+Check(whmRoundtrip.JobSlots.SequenceEqual(oldSlots), "White Mage backup roundtrip must preserve all slots and job identity.");
+Reject(() => legacyBackup.CheckIdentity(characterA, whm), "A Monk backup must never restore into White Mage.");
+Reject(() => whmBackup.CheckIdentity(characterA, JobPreset.Monk), "A White Mage backup must never restore into Monk.");
+Reject(() => whmBackup.CheckIdentity(characterB, whm), "White Mage backups must reject another character.");
+Reject(() => whmBackup.CheckIdentity(0, whm), "White Mage backups must reject an unknown character.");
+whmBackup.TargetLayout = 3;
+Reject(() => whmBackup.CheckIdentity(characterA, whm), "White Mage restore must reject a backup for Monk's HUD slot.");
+Console.WriteLine($"PASS: {checks} Monk and White Mage layout, keyboard, restore, backup compatibility and character detection checks.");

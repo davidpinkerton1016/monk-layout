@@ -18,9 +18,8 @@ internal static unsafe class NativeLayout
     internal const string StructHash = "F5A2C68CCECD3E199BDA572050E98902B2E7594066C95DC7826C2D4297CD0564";
     internal const string GameVersion = "2026.10.16.0000.0000";
     internal const int EntriesPerLayout = 112;
-    private const int TargetLayout = 3;
     private static readonly string[] UiOptions = ["HotbarCommon01", "HotbarCommon02", "HotbarCommon03", "HotbarLock", "HotbarDispRecastTime"];
-    private static readonly string[] EssentialHud = ["_ActionBar", "_ActionBar01", "_ActionBar02", "JobHudMNK0", "JobHudMNK1", "_ParameterWidget", "_TargetInfo", "_TargetInfoMainTarget", "_TargetInfoBuffDebuff", "_TargetInfoCastBar"];
+    private static readonly string[] EssentialHud = ["_ActionBar", "_ActionBar01", "_ActionBar02", "_ParameterWidget", "_TargetInfo", "_TargetInfoMainTarget", "_TargetInfoBuffDebuff", "_TargetInfoCastBar"];
 
     internal static float GetHudGlobalScale(IGameGui gui)
     {
@@ -29,9 +28,9 @@ internal static unsafe class NativeLayout
         return ((AtkUnitBase*)addon.Address)->IsScalingWithGlobalUIScale ? AtkUnitBase.GetGlobalUIScale() : 1;
     }
 
-    internal static ulong CheckReady(PlayerSession session, ICondition condition, IGameGui gui, bool require100 = true)
+    internal static ulong CheckReady(PlayerSession session, ICondition condition, IGameGui gui, JobPreset preset, bool require100 = true)
     {
-        session.CheckReady(require100);
+        session.CheckReady(require100, preset);
         if (condition[Dalamud.Game.ClientState.Conditions.ConditionFlag.InCombat]
             || condition[Dalamud.Game.ClientState.Conditions.ConditionFlag.BoundByDuty]
             || condition[Dalamud.Game.ClientState.Conditions.ConditionFlag.OccupiedInCutSceneEvent])
@@ -43,10 +42,10 @@ internal static unsafe class NativeLayout
         }
         var fw = NativeFramework.Instance();
         if (fw == null || fw->GameVersionString != GameVersion)
-            throw new InvalidOperationException($"This build supports game {GameVersion}. The installed game needs a matching build of Monk Layout.");
+            throw new InvalidOperationException($"This build supports game {GameVersion}. The installed game needs a matching build of this plugin.");
         var bars = RaptureHotbarModule.Instance();
-        if (bars == null || !bars->ModuleReady || !bars->DatFileLoadedSuccessfully || bars->ActiveHotbarClassJobId != 20 || bars->PvPHotbarsActive)
-            throw new InvalidOperationException("Wait for the Monk PvE hotbars to finish loading.");
+        if (bars == null || !bars->ModuleReady || !bars->DatFileLoadedSuccessfully || bars->ActiveHotbarClassJobId != preset.JobId || bars->PvPHotbarsActive)
+            throw new InvalidOperationException($"Wait for the {preset.Name} PvE hotbars to finish loading.");
         var hud = AddonConfig.Instance();
         if (hud == null || !hud->IsLoaded || hud->ActiveDataSet == null || hud->ActiveDataSet->CurrentHudLayout is < 0 or > 3)
             throw new InvalidOperationException("The native HUD configuration has not loaded yet.");
@@ -57,7 +56,7 @@ internal static unsafe class NativeLayout
             throw new InvalidOperationException("The keyboard configuration has not loaded yet.");
         var characterId = PlayerSession.ResolveContentId(session.StateContentId, hud->CharacterContentId, bars->CharacterContentId);
         if (characterId == 0)
-            throw new InvalidOperationException("Monk detected, but the character identity in the HUD and hotbar settings has not finished loading or does not agree. No settings were changed. Wait a moment, then try again.");
+            throw new InvalidOperationException($"{preset.Name} detected, but the character identity in the HUD and hotbar settings has not finished loading or does not agree. No settings were changed. Wait a moment, then try again.");
         return characterId;
     }
 
@@ -72,12 +71,12 @@ internal static unsafe class NativeLayout
         return PlayerSession.ResolveContentId(session.StateContentId, hud->CharacterContentId, bars->CharacterContentId);
     }
 
-    internal static List<ResolvedAction> ResolveActions(IDataManager data)
+    internal static List<ResolvedAction> ResolveActions(IDataManager data, JobPreset preset)
     {
         var actions = data.GetExcelSheet<ActionRow>(ClientLanguage.English);
         var general = data.GetExcelSheet<GeneralRow>(ClientLanguage.English);
         var plan = new List<ResolvedAction>();
-        foreach (var spec in LayoutPlan.Actions)
+        foreach (var spec in preset.Actions)
         {
             if (spec.Action == null) { plan.Add(new(spec, RaptureHotbarModule.HotbarSlotType.Empty, 0)); continue; }
             uint id;
@@ -90,7 +89,7 @@ internal static unsafe class NativeLayout
             else
             {
                 var matches = actions.Where(a => !a.IsPvP && a.ClassJobLevel > 0 && a.ClassJobCategory.RowId != 0
-                    && (a.ClassJob.RowId is 2 or 20 || a.IsRoleAction) && a.Name.ExtractText() == spec.Action).ToArray();
+                    && (a.ClassJob.RowId == preset.BaseClassId || a.ClassJob.RowId == preset.JobId || a.IsRoleAction) && a.Name.ExtractText() == spec.Action).ToArray();
                 if (matches.Length != 1) throw new InvalidOperationException($"Could not resolve {spec.Action} uniquely in the installed game data. Nothing was changed.");
                 id = matches[0].RowId;
             }
@@ -100,7 +99,7 @@ internal static unsafe class NativeLayout
         return plan;
     }
 
-    internal static Dictionary<int, Binding> KeyChanges()
+    internal static Dictionary<int, Binding> KeyChanges(JobPreset preset)
     {
         var span = UIInputData.Instance()->GetKeybindSpan();
         var records = new List<Binding>();
@@ -109,12 +108,12 @@ internal static unsafe class NativeLayout
         // Include all of the game's movement, camera steering and jump bindings.
         var protectedIds = Enum.GetValues<InputId>().Where(id => id.ToString().StartsWith("MOVE_", StringComparison.Ordinal)
             || id.ToString().Contains("JUMP", StringComparison.Ordinal)).Select(id => (int)id).ToHashSet();
-        return LayoutPlan.PlanKeyChanges(records, protectedIds);
+        return LayoutPlan.PlanKeyChanges(records, protectedIds, preset.Actions);
     }
 
     private static Stroke ToStroke(KeySetting key) => new((byte)key.Key, (byte)key.KeyModifier);
 
-    internal static Backup Capture(ulong characterId, IGameConfig config)
+    internal static Backup Capture(ulong characterId, IGameConfig config, JobPreset preset)
     {
         var hud = AddonConfig.Instance();
         var original = hud->ActiveDataSet->CurrentHudLayout;
@@ -124,14 +123,15 @@ internal static unsafe class NativeLayout
         try { hud->ChangeHudLayout((uint)(original == 0 ? 1 : 0)); }
         finally { hud->ChangeHudLayout((uint)original); }
         if (hud->ActiveDataSet->CurrentHudLayout != original)
-            throw new InvalidOperationException("The game did not return to your starting HUD after saving it. No Monk preset was applied.");
-        ValidateSavedHud(original);
+            throw new InvalidOperationException("The game did not return to your starting HUD after saving it. No job preset was applied.");
+        ValidateSavedHud(original, preset);
         var keys = UIInputData.Instance()->GetKeybindSpan();
         var result = new Backup
         {
             StructHash = StructHash, CharacterId = characterId, OriginalLayout = original,
+            ClassJobId = preset.JobId, TargetLayout = preset.HudLayout,
             HudLayouts = MemoryMarshal.AsBytes(hud->ActiveDataSet->HudLayoutConfigEntries).ToArray(),
-            MonkSlots = SavedSlots(20), SharedSlots = SavedSlots(0),
+            JobSlots = SavedSlots(preset.JobId), SharedSlots = SavedSlots(0),
             KeyCount = keys.Length, Keybinds = MemoryMarshal.AsBytes(keys).ToArray()
         };
         foreach (var option in UiOptions)
@@ -140,21 +140,23 @@ internal static unsafe class NativeLayout
             result.Ui.Add(option, value);
         }
         if (config.UiControl.TryGet("DirectChat", out uint direct)) result.Control.Add("DirectChat", direct);
-        ValidateBackup(result, characterId);
+        ValidateBackup(result, characterId, preset);
         return result;
     }
 
-    private static void ValidateSavedHud(int layout)
+    private static void ValidateSavedHud(int layout, JobPreset preset)
     {
         var entries = AddonConfig.Instance()->ActiveDataSet->HudLayoutConfigEntries.Slice(layout * EntriesPerLayout, EntriesPerLayout);
-        foreach (var name in EssentialHud)
+        var required = EssentialHud.Concat(preset.Gauges);
+        if (preset.JobId == 24) required = required.Append("_PartyList");
+        foreach (var name in required)
         {
             if (Find(layout, name) != null) continue;
             var populated = 0;
             foreach (var entry in entries) if (entry.AddonNameHash != 0) populated++;
             // Keep the failed lookup read-only. Never invent records or change
             // native offsets to make an incompatible HUD table appear valid.
-            throw new InvalidOperationException($"HUD {layout + 1} still has no saved {name} after automatically saving the live HUD ({populated}/{EntriesPerLayout} entries). No Monk preset was applied.");
+            throw new InvalidOperationException($"HUD {layout + 1} still has no saved {name} after automatically saving the live HUD ({populated}/{EntriesPerLayout} entries). No job preset was applied.");
         }
     }
 
@@ -170,13 +172,14 @@ internal static unsafe class NativeLayout
         return list.ToArray();
     }
 
-    internal static void ValidateBackup(Backup backup, ulong character)
+    internal static void ValidateBackup(Backup backup, ulong character, JobPreset preset)
     {
+        backup.CheckIdentity(character, preset);
         if (character == 0 || backup.Schema != 1 || backup.StructHash != StructHash || backup.CharacterId != character
             || backup.OriginalLayout is < 0 or > 3 || backup.HudLayouts.Length != 448 * sizeof(AddonConfigEntry)
             || backup.KeyCount != UIInputData.Instance()->NumKeybinds || backup.Keybinds.Length != backup.KeyCount * sizeof(Keybind))
             throw new InvalidOperationException("The backup does not match this character or the installed game data structures.");
-        foreach (var slots in new[] { backup.MonkSlots, backup.SharedSlots })
+        foreach (var slots in new[] { backup.JobSlots, backup.SharedSlots })
             if (slots.Length != 36 || slots.Any(s => s.Bar is < 0 or > 2 || s.Slot is < 0 or > 11)
                 || slots.Select(s => (s.Bar, s.Slot)).Distinct().Count() != 36)
                 throw new InvalidOperationException("The hotbar backup is incomplete.");
@@ -185,16 +188,17 @@ internal static unsafe class NativeLayout
     }
 
     internal static void Apply(IReadOnlyList<ResolvedAction> plan, Backup before, IGameConfig config,
-        Dictionary<int, Binding> keyChanges, bool applyKeys, float width, float height, float size, float globalScale, float rowGap)
+        Dictionary<int, Binding> keyChanges, bool applyKeys, float width, float height, float size, float globalScale, float rowGap, JobPreset preset)
     {
+        var targetLayout = preset.HudLayout;
         var hud = AddonConfig.Instance();
         var dataset = hud->ActiveDataSet;
         hud->ChangeHudLayout((uint)(before.OriginalLayout == 0 ? 1 : 0));
         // Never modify a stored layout while it is live. The game saves the outgoing
         // live layout during ChangeHudLayout and would overwrite those edits.
         var source = MemoryMarshal.Cast<byte, AddonConfigEntry>(before.HudLayouts).Slice(before.OriginalLayout * 112, 112);
-        source.CopyTo(dataset->HudLayoutConfigEntries.Slice(TargetLayout * 112, 112));
-        ArrangeHud(width, height, size, globalScale, rowGap);
+        source.CopyTo(dataset->HudLayoutConfigEntries.Slice(targetLayout * 112, 112));
+        ArrangeHud(width, height, size, globalScale, rowGap, preset);
 
         var bars = RaptureHotbarModule.Instance();
         for (var b = 0; b < 3; b++)
@@ -203,7 +207,7 @@ internal static unsafe class NativeLayout
             // Keep the module's documented share mask in sync even when a config
             // notification is deferred until the next frame.
             bars->HotbarShareStateBitmask[b / 8] &= (byte)~(1 << (b % 8));
-            bars->LoadSavedHotbar(20, (uint)b);
+            bars->LoadSavedHotbar((uint)preset.JobId, (uint)b);
         }
         foreach (var p in plan)
             bars->SetAndSaveSlot((uint)p.Spec.Bar, (uint)p.Spec.Slot, p.Type, p.Id, true, false);
@@ -224,23 +228,23 @@ internal static unsafe class NativeLayout
             input->SaveFile(true);
         }
         bars->SaveFile(true);
-        hud->ChangeHudLayout(TargetLayout);
+        hud->ChangeHudLayout((uint)targetLayout);
         hud->SaveFile(true);
-        Verify(plan, keyChanges, applyKeys);
+        Verify(plan, keyChanges, applyKeys, preset);
     }
 
-    private static void Verify(IReadOnlyList<ResolvedAction> plan, Dictionary<int, Binding> changes, bool keysApplied)
+    private static void Verify(IReadOnlyList<ResolvedAction> plan, Dictionary<int, Binding> changes, bool keysApplied, JobPreset preset)
     {
         var bars = RaptureHotbarModule.Instance();
         foreach (var p in plan)
         {
-            var stored = bars->SavedHotbars[20].Hotbars[p.Spec.Bar].Slots[p.Spec.Slot];
+            var stored = bars->SavedHotbars[preset.JobId].Hotbars[p.Spec.Bar].Slots[p.Spec.Slot];
             var live = bars->GetSlotById((uint)p.Spec.Bar, (uint)p.Spec.Slot);
             if (stored.CommandId != p.Id || stored.CommandType != p.Type || live->CommandId != p.Id || live->CommandType != p.Type)
                 throw new InvalidOperationException($"The game did not retain hotbar {p.Spec.Bar + 1}, slot {p.Spec.Slot + 1}.");
         }
-        if (AddonConfig.Instance()->ActiveDataSet->CurrentHudLayout != TargetLayout)
-            throw new InvalidOperationException("HUD layout 4 did not activate.");
+        if (AddonConfig.Instance()->ActiveDataSet->CurrentHudLayout != preset.HudLayout)
+            throw new InvalidOperationException($"HUD layout {preset.HudLayout + 1} did not activate.");
         if (keysApplied)
             foreach (var binding in changes.Values)
             {
@@ -250,19 +254,20 @@ internal static unsafe class NativeLayout
             }
     }
 
-    internal static void Restore(Backup backup, IEnumerable<int> keyIds, IGameConfig config, ulong characterId, bool restoreKeyboard, bool repairShared = false)
+    internal static void Restore(Backup backup, IEnumerable<int> keyIds, IGameConfig config, ulong characterId, JobPreset preset, bool restoreKeyboard, bool repairShared = false)
     {
-        ValidateBackup(backup, characterId);
+        ValidateBackup(backup, characterId, preset);
+        var targetLayout = preset.HudLayout;
         var ids = keyIds.Distinct().ToArray();
         if (ids.Any(id => id < 0 || id >= backup.KeyCount)) throw new InvalidOperationException("The keybind restore list is invalid.");
         var hud = AddonConfig.Instance();
-        if (hud->ActiveDataSet->CurrentHudLayout == TargetLayout) hud->ChangeHudLayout(0);
+        if (hud->ActiveDataSet->CurrentHudLayout == targetLayout) hud->ChangeHudLayout(0);
         var stored = MemoryMarshal.Cast<byte, AddonConfigEntry>(backup.HudLayouts);
-        stored.Slice(TargetLayout * 112, 112).CopyTo(hud->ActiveDataSet->HudLayoutConfigEntries.Slice(TargetLayout * 112, 112));
+        stored.Slice(targetLayout * 112, 112).CopyTo(hud->ActiveDataSet->HudLayoutConfigEntries.Slice(targetLayout * 112, 112));
         var bars = RaptureHotbarModule.Instance();
-        foreach (var s in backup.MonkSlots)
+        foreach (var s in backup.JobSlots)
         {
-            ref var slot = ref bars->SavedHotbars[20].Hotbars[s.Bar].Slots[s.Slot];
+            ref var slot = ref bars->SavedHotbars[preset.JobId].Hotbars[s.Bar].Slots[s.Slot];
             slot.CommandType = (RaptureHotbarModule.HotbarSlotType)s.Type; slot.CommandId = s.Id;
         }
         // Shared bars are not part of the preset. Only repair them if an apply
@@ -292,11 +297,11 @@ internal static unsafe class NativeLayout
         }
         if (restoreKeyboard)
             foreach (var option in backup.Control) config.UiControl.Set(option.Key, option.Value);
-        for (uint b = 0; b < 3; b++) bars->LoadSavedHotbar(20, b);
+        for (uint b = 0; b < 3; b++) bars->LoadSavedHotbar((uint)preset.JobId, b);
         bars->SaveFile(true);
         hud->ChangeHudLayout((uint)backup.OriginalLayout);
         hud->SaveFile(true);
-        if (!SavedSlots(20).SequenceEqual(backup.MonkSlots) || (repairShared && !SavedSlots(0).SequenceEqual(backup.SharedSlots)))
+        if (!SavedSlots(preset.JobId).SequenceEqual(backup.JobSlots) || (repairShared && !SavedSlots(0).SequenceEqual(backup.SharedSlots)))
             throw new InvalidOperationException("The restored hotbars did not pass verification. The local backup remains available.");
         if (hud->ActiveDataSet->CurrentHudLayout != backup.OriginalLayout)
             throw new InvalidOperationException("The original HUD layout did not reactivate. The local backup remains available.");
@@ -320,17 +325,20 @@ internal static unsafe class NativeLayout
         return null;
     }
 
-    private static void Place(string name, float x, float y, byte anchor, float scale, bool? visible = null)
+    private static void Place(int layout, string name, float x, float y, byte anchor, float scale, bool? visible = null)
     {
-        var e = Find(TargetLayout, name);
+        var e = Find(layout, name);
         if (e == null) return;
         e->X = x; e->Y = y; e->ByteValue1 = anchor; e->Scale = scale;
         if (visible.HasValue) e->ByteValue2 = (byte)(visible.Value ? 3 : 0);
         if (visible == true) e->Alpha = 255;
     }
 
-    private static void ArrangeHud(float width, float height, float size, float globalScale, float rowGap)
+    private static void ArrangeHud(float width, float height, float size, float globalScale, float rowGap, JobPreset preset)
     {
+        var targetLayout = preset.HudLayout;
+        void Place(string name, float x, float y, byte anchor, float scale, bool? visible = null)
+            => NativeLayout.Place(targetLayout, name, x, y, anchor, scale, visible);
         var g = LayoutPlan.GetGeometry(width, height, size, globalScale, rowGap);
         float PercentY(float pixels) => pixels / height * 100;
         var halfGaugeGap = 4 * g.EffectiveScale / width * 100;
@@ -338,23 +346,35 @@ internal static unsafe class NativeLayout
         {
             var name = b == 0 ? "_ActionBar" : $"_ActionBar{b:00}";
             Place(name, 50, PercentY(g.BarBottom - b * g.BarStep), 7, g.Scale, true);
-            var e = Find(TargetLayout, name);
+            var e = Find(targetLayout, name);
             e->ElementFlags = (e->ElementFlags & 0xffff00ffu) | 0x100u; // Native 12 x 1 shape.
             e->Width = 624; e->Height = 72;
         }
         Place("_ParameterWidget", 50, PercentY(g.ParameterBottom), 7, g.Scale, true);
-        Place("JobHudMNK0", 50 - halfGaugeGap, PercentY(g.GaugeBottom), 8, g.Scale, true);
-        Place("JobHudMNK1", 50 + halfGaugeGap, PercentY(g.GaugeBottom), 6, g.Scale, true);
+        if (preset.JobId == 24)
+            Place("JobHudWHM0", 50, PercentY(g.GaugeBottom), 7, g.Scale, true);
+        else
+        {
+            Place("JobHudMNK0", 50 - halfGaugeGap, PercentY(g.GaugeBottom), 8, g.Scale, true);
+            Place("JobHudMNK1", 50 + halfGaugeGap, PercentY(g.GaugeBottom), 6, g.Scale, true);
+        }
         // Use native independent target elements so the enemy cast bar can sit
         // near the character while its health and effects remain at the top.
         Place("_TargetInfo", 50, 7, 1, g.Scale, true);
-        Find(TargetLayout, "_TargetInfo")->ElementFlags |= 1u;
+        Find(targetLayout, "_TargetInfo")->ElementFlags |= 1u;
         Place("_TargetInfoMainTarget", 50, 7, 1, g.Scale, true);
         Place("_TargetInfoBuffDebuff", 50, 15, 1, g.Scale, true);
         Place("_TargetInfoCastBar", 50, 52, 4, Math.Min(g.Scale * 1.2f, 1.6f), true);
         Place("_CastBar", 50, 57, 4, g.Scale);
         Place("_FocusTargetInfo", 74, 33, 0, g.Scale);
-        Place("_PartyList", 2, 26, 0, g.Scale);
+        if (preset.JobId == 24)
+        {
+            var party = Find(targetLayout, "_PartyList");
+            var partyWidth = party != null && party->Width > 0 ? party->Width : 380;
+            var partyX = Math.Clamp(50 - (partyWidth + 96) * g.EffectiveScale / width * 100, 2, 42);
+            Place("_PartyList", partyX, 26, 0, g.Scale, true);
+        }
+        else Place("_PartyList", 2, 26, 0, g.Scale);
         Place("_EnemyList", 78, 43, 0, g.Scale);
         Place("_Status", 2, 15, 0, g.Scale);
         Place("_StatusCustom0", 2, 4, 0, g.Scale);
@@ -364,7 +384,7 @@ internal static unsafe class NativeLayout
         Place("_LimitBreak", 50, 3, 1, g.Scale);
         foreach (var name in new[] { "_ActionCross", "_ActionDoubleCrossL", "_ActionDoubleCrossR" })
         {
-            var e = Find(TargetLayout, name);
+            var e = Find(targetLayout, name);
             if (e != null) e->ByteValue2 = 0;
         }
     }

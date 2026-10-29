@@ -2,10 +2,10 @@ using System.Text;
 
 namespace MonkLayout;
 
-public sealed record ActionSpec(int Bar, int Slot, string? Action, string Label, bool General = false)
+public sealed record ActionSpec(int Bar, int Slot, string? Action, string Label, bool General = false, bool Bind = true)
 {
-    public Stroke Shortcut => new(LayoutPlan.Keys[Slot], (byte)(Bar == 1 ? 1 : Bar == 2 ? 2 : 0));
-    public string ShortcutText => (Bar == 1 ? "Shift+" : Bar == 2 ? "Ctrl+" : "") + (char)Shortcut.Key;
+    public Stroke Shortcut => Bind && Action != null ? new(LayoutPlan.Keys[Slot], (byte)(Bar == 1 ? 1 : Bar == 2 ? 2 : 0)) : default;
+    public string ShortcutText => Action == null ? "Unassigned" : !Bind ? "Click" : (Bar == 1 ? "Shift+" : Bar == 2 ? "Ctrl+" : "") + (char)Shortcut.Key;
 }
 
 public readonly record struct Stroke(byte Key, byte Modifier);
@@ -22,6 +22,7 @@ public static class LayoutPlan
     public const float HotbarRowPitch = 49;
     public const float DefaultRowGap = 5;
     public static readonly ActionSpec[] Actions = Build();
+    public static readonly ActionSpec[] WhiteMageActions = BuildWhiteMage();
 
     private static ActionSpec[] Build()
     {
@@ -47,10 +48,29 @@ public static class LayoutPlan
                 name is "Sprint" or "Limit Break"))).ToArray();
     }
 
-    public static Dictionary<int, Binding> PlanKeyChanges(IEnumerable<Binding> original, ISet<int> protectedInputs)
+    private static ActionSpec[] BuildWhiteMage()
+    {
+        string?[][] names = [
+            ["Stone", "Aero", "Holy", "Afflatus Solace", "Afflatus Rapture", "Assize",
+             "Regen", "Swiftcast", "Benediction", "Aetherial Shift", "Esuna", "Sprint"],
+            ["Glare IV", "Afflatus Misery", "Presence of Mind", "Tetragrammaton", "Cure II", "Asylum",
+             "Divine Benison", "Thin Air", "Aquaveil", "Surecast", "Raise", "Lucid Dreaming"],
+            ["Medica II", "Cure III", "Plenary Indulgence", "Temperance", "Divine Caress", "Liturgy of the Bell",
+             "Rescue", "Limit Break", "Cure", "Medica", "Repose", null]
+        ];
+        var labels = new Dictionary<string, string>
+        {
+            ["Stone"] = "Glare III", ["Aero"] = "Dia", ["Holy"] = "Holy III", ["Medica II"] = "Medica III"
+        };
+        return names.SelectMany((row, bar) => row.Select((name, slot) =>
+            new ActionSpec(bar, slot, name, name == null ? "Empty" : labels.GetValueOrDefault(name, name),
+                name is "Sprint" or "Limit Break", !(bar == 2 && slot >= 8)))).ToArray();
+    }
+
+    public static Dictionary<int, Binding> PlanKeyChanges(IEnumerable<Binding> original, ISet<int> protectedInputs, IEnumerable<ActionSpec>? actions = null)
     {
         var before = original.ToDictionary(b => b.Id);
-        var desired = Actions.Where(a => a.Action != null).ToDictionary(a => FirstHotbarInputId + a.Bar * 12 + a.Slot, a => a.Shortcut);
+        var desired = (actions ?? Actions).Where(a => a.Action != null && a.Bind).ToDictionary(a => FirstHotbarInputId + a.Bar * 12 + a.Slot, a => a.Shortcut);
         foreach (var id in desired.Keys)
             if (!before.ContainsKey(id)) throw new InvalidOperationException("The game's hotbar keybind table has changed.");
         var strokes = desired.Values.ToHashSet();

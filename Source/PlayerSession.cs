@@ -10,19 +10,20 @@ internal readonly record struct PlayerSession(
     internal string Summary => $"Login: {(IsLoggedIn ? "yes" : "no")}; character: {(HasLocalPlayer ? "present" : "loading")}; "
         + $"job: {JobName(JobId)}; level: {Level}; player data: {(StateLoaded ? "loaded" : "loading")}; data job: {StateJobId}.";
 
-    internal void CheckReady(bool require100)
+    internal void CheckReady(bool require100, JobPreset? selected = null)
     {
+        var preset = selected ?? JobPreset.Monk;
         if (!IsLoggedIn)
             throw new InvalidOperationException("The game reports that you are not logged in yet. Wait for login to finish, then try again.");
         if (!HasLocalPlayer)
             throw new InvalidOperationException("Your character is still loading. Wait until you can move, then try again.");
-        if (JobId == 2)
-            throw new InvalidOperationException("Your active job is Pugilist. Equip the Soul of the Monk, then try again.");
-        if (JobId != 20)
-            throw new InvalidOperationException($"Your active job is {JobName(JobId)}. Switch to Monk, then try again.");
+        if (JobId == preset.BaseClassId)
+            throw new InvalidOperationException($"Your active job is {preset.BaseClassName}. Equip the {preset.SoulCrystal}, then try again.");
+        if (JobId != preset.JobId)
+            throw new InvalidOperationException($"Your active job is {JobName(JobId)}. Switch to {preset.Name}, then try again.");
         if (require100 && (Level < 100
-            || (StateLoaded && StateJobId == 20 && (EffectiveLevel < 100 || IsLevelSynced))))
-            throw new InvalidOperationException($"Use your level 100 Monk outside level sync. Detected character level: {Level}.");
+            || (StateLoaded && StateJobId == preset.JobId && (EffectiveLevel < 100 || IsLevelSynced))))
+            throw new InvalidOperationException($"Use your level 100 {preset.Name} outside level sync. Detected character level: {Level}.");
     }
 
     // A missing PlayerState must not produce a zero-ID backup. The two independent
@@ -38,7 +39,9 @@ internal readonly record struct PlayerSession(
     {
         0 => "loading",
         2 => "Pugilist (2)",
+        6 => "Conjurer (6)",
         20 => "Monk (20)",
+        24 => "White Mage (24)",
         _ => $"job ID {job}"
     };
 }

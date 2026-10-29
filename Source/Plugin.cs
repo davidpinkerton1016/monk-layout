@@ -35,6 +35,7 @@ public sealed class Plugin : IDalamudPlugin
     private int pending;
     private bool busy;
     private ulong characterId;
+    private JobPreset preset = JobPreset.Monk;
     private string status = "Log in as your level 100 Monk, then press Apply Monk layout.";
     private readonly string compatibilityError;
     private readonly string directory;
@@ -50,19 +51,29 @@ public sealed class Plugin : IDalamudPlugin
             compatibilityError = hash == NativeLayout.StructHash ? "" : "Your Dalamud build uses a different HUD storage format. This package needs a matching build before it can apply or restore layouts.";
         }
         catch (Exception ex) { compatibilityError = $"Could not verify compatibility: {ex.Message}"; }
-        Commands.AddHandler("/monklayout", new CommandInfo((_, _) => open = true) { HelpMessage = "Open the Monk HUD and hotbar setup tool." });
+        Commands.AddHandler("/monklayout", new CommandInfo((_, _) => OpenPreset(JobPreset.Monk)) { HelpMessage = "Open the Monk HUD and hotbar preset." });
+        Commands.AddHandler("/whmlayout", new CommandInfo((_, _) => OpenPreset(JobPreset.WhiteMage)) { HelpMessage = "Open the White Mage HUD and hotbar preset." });
+        if (Objects.LocalPlayer?.ClassJob.RowId == 24) SelectPreset(JobPreset.WhiteMage);
         Interface.UiBuilder.Draw += Draw;
         Interface.UiBuilder.OpenMainUi += Open;
         Interface.UiBuilder.OpenConfigUi += Open;
         Framework.Update += OnUpdate;
     }
 
-    private void Open() => open = true;
+    private void SelectPreset(JobPreset value)
+    {
+        preset = value;
+        status = $"Switch to your level 100 {preset.Name}, then press Apply {preset.Name} layout.";
+    }
+
+    private void OpenPreset(JobPreset value) { if (busy || pending != 0) return; SelectPreset(value); open = true; }
+    private void Open() => OpenPreset(Objects.LocalPlayer?.ClassJob.RowId == 24 ? JobPreset.WhiteMage : JobPreset.Monk);
     private string CharacterDirectory => characterId != 0
         ? Path.Combine(directory, characterId.ToString("X16"))
         : throw new InvalidOperationException("The character identity has not been verified yet. No settings were changed.");
-    private string OriginalPath => Path.Combine(CharacterDirectory, "original-settings.json");
-    private string StatePath => Path.Combine(CharacterDirectory, "install-state.json");
+    private string JobDirectory => Path.Combine(CharacterDirectory, preset.BackupFolder);
+    private string OriginalPath => Path.Combine(JobDirectory, "original-settings.json");
+    private string StatePath => Path.Combine(JobDirectory, "install-state.json");
 
     private static PlayerSession ReadSession()
     {
@@ -76,12 +87,17 @@ public sealed class Plugin : IDalamudPlugin
         if (!open) return;
         viewport = ImGui.GetMainViewport().Size;
         ImGui.SetNextWindowSize(new Vector2(740, 650), ImGuiCond.FirstUseEver);
-        if (ImGui.Begin("Monk Layout", ref open))
+        if (ImGui.Begin("Monk and White Mage Layouts###MonkLayout", ref open))
         {
-            ImGui.TextUnformatted($"Monk Layout {PluginVersion} | Keyboard and mouse | PvE");
+            ImGui.TextUnformatted($"{preset.Name} Layout {PluginVersion} | Keyboard and mouse | PvE");
             ImGui.TextWrapped(ReadSession().Summary);
+            ImGui.BeginDisabled(busy || pending != 0);
+            if (ImGui.RadioButton("Monk", preset == JobPreset.Monk)) SelectPreset(JobPreset.Monk);
+            ImGui.SameLine();
+            if (ImGui.RadioButton("White Mage", preset == JobPreset.WhiteMage)) SelectPreset(JobPreset.WhiteMage);
+            ImGui.EndDisabled();
             ImGui.Separator();
-            ImGui.TextWrapped("Apply a complete Monk setup: three horizontal hotbars, paired form skills, nearby burst buttons, and centered job gauges. The preset uses HUD layout 4 and Monk hotbars 1-3. Bars 1-3 become unshared; sharing is a character-wide setting.");
+            ImGui.TextWrapped($"{preset.Description} Uses HUD layout {preset.HudLayout + 1} and {preset.Name} hotbars 1-3. Bars 1-3 become unshared; sharing is a character-wide setting.");
             ImGui.Spacing();
             ImGui.Checkbox("Apply recommended keybinds", ref applyKeys);
             if (applyKeys)
@@ -90,12 +106,12 @@ public sealed class Plugin : IDalamudPlugin
                 ImGui.TextWrapped("Your current keyboard bindings will stay in place. The preview below shows the recommended keys only.");
             ImGui.SliderFloat("HUD size", ref size, .8f, 1.2f, "%.2fx");
             ImGui.SliderFloat("Row spacing", ref rowGap, 0, 16, "%.0f");
-            ImGui.TextWrapped("The default compact spacing groups the hotbars, HP and Monk gauges together. Press Apply Monk layout after adjusting either slider.");
-            ImGui.TextWrapped("Your first backup stays on this PC. Restore original settings returns HUD 4, the affected Monk bars and any changed keys to that backup. You can disable the plugin after applying.");
+            ImGui.TextWrapped("Compact spacing groups the hotbars, HP and job gauge together. Press Apply after adjusting either slider. Ctrl+Z/X/C/V remain available for clipboard shortcuts.");
+            ImGui.TextWrapped($"The first backup for each job stays on this PC. Restore original settings returns HUD {preset.HudLayout + 1}, this job's bars and any changed keys to that job's backup. You can disable the plugin after applying.");
             ImGui.Spacing();
             if (compatibilityError.Length > 0) ImGui.TextWrapped(compatibilityError);
             ImGui.BeginDisabled(busy || pending != 0 || compatibilityError.Length > 0);
-            if (ImGui.Button("Apply Monk layout", new Vector2(225, 36))) pending = 1;
+            if (ImGui.Button($"Apply {preset.Name} layout", new Vector2(225, 36))) pending = 1;
             ImGui.SameLine();
             ImGui.BeginDisabled(characterId == 0 || !File.Exists(OriginalPath));
             if (ImGui.Button("Restore original settings", new Vector2(225, 36))) pending = 2;
@@ -119,7 +135,8 @@ public sealed class Plugin : IDalamudPlugin
                         ImGui.TableNextColumn(); ImGui.TextUnformatted(((char)LayoutPlan.Keys[s]).ToString());
                         for (var b = 0; b < 3; b++)
                         {
-                            ImGui.TableNextColumn(); ImGui.TextWrapped(LayoutPlan.Actions[b * 12 + s].Label);
+                            var action = preset.Actions[b * 12 + s];
+                            ImGui.TableNextColumn(); ImGui.TextWrapped(action.Label + (action.Action != null && !action.Bind ? " [click]" : ""));
                         }
                     }
                     ImGui.EndTable();
@@ -142,16 +159,16 @@ public sealed class Plugin : IDalamudPlugin
         {
             if (compatibilityError.Length > 0) throw new InvalidOperationException(compatibilityError);
             var session = ReadSession();
-            Log.Information("Monk Layout {Version}: {Session}", PluginVersion, session.Summary);
-            characterId = NativeLayout.CheckReady(session, Condition, Gui, command == 1);
-            Directory.CreateDirectory(CharacterDirectory);
+            Log.Information("Job Layout {Version}, preset {Job}: {Session}", PluginVersion, preset.Name, session.Summary);
+            characterId = NativeLayout.CheckReady(session, Condition, Gui, preset, command == 1);
+            Directory.CreateDirectory(JobDirectory);
             if (command == 1) Apply(); else Restore();
         }
         catch (Exception ex)
         {
             status = ex.Message;
-            Chat.PrintError($"[Monk Layout] {ex.Message}");
-            Log.Error(ex, "Monk layout operation failed");
+            Chat.PrintError($"[{preset.Name} Layout] {ex.Message}");
+            Log.Error(ex, "Job layout operation failed");
         }
         finally { busy = false; }
     }
@@ -159,15 +176,15 @@ public sealed class Plugin : IDalamudPlugin
     private void Apply()
     {
         // Resolve every action and key conflict before editing any game settings.
-        var plan = NativeLayout.ResolveActions(Data);
+        var plan = NativeLayout.ResolveActions(Data, preset);
         var globalScale = NativeLayout.GetHudGlobalScale(Gui);
         _ = LayoutPlan.GetGeometry(viewport.X, viewport.Y, size, globalScale, rowGap);
-        var keys = applyKeys ? NativeLayout.KeyChanges() : new Dictionary<int, Binding>();
-        var before = NativeLayout.Capture(characterId, GameConfig);
+        var keys = applyKeys ? NativeLayout.KeyChanges(preset) : new Dictionary<int, Binding>();
+        var before = NativeLayout.Capture(characterId, GameConfig, preset);
         var previousState = LoadState();
-        if (File.Exists(OriginalPath)) NativeLayout.ValidateBackup(ReadBackup(OriginalPath), characterId);
+        if (File.Exists(OriginalPath)) NativeLayout.ValidateBackup(ReadBackup(OriginalPath), characterId, preset);
         else SaveJson(OriginalPath, before, false);
-        var transactionPath = Path.Combine(CharacterDirectory, $"before-apply-{DateTime.UtcNow:yyyyMMdd-HHmmss-fffffff}.json");
+        var transactionPath = Path.Combine(JobDirectory, $"before-apply-{DateTime.UtcNow:yyyyMMdd-HHmmss-fffffff}.json");
         SaveJson(transactionPath, before, false);
         // Save the restore index before editing, so it survives an interrupted apply.
         var nextState = new InstallState
@@ -179,22 +196,22 @@ public sealed class Plugin : IDalamudPlugin
         SaveJson(StatePath, nextState, true);
         try
         {
-            NativeLayout.Apply(plan, before, GameConfig, keys, applyKeys, viewport.X, viewport.Y, size, globalScale, rowGap);
-            status = "Applied and verified: HUD 4, all 36 Monk slots, and the selected keyboard changes. Your original settings are backed up.";
-            Chat.Print($"[Monk Layout] {status}");
+            NativeLayout.Apply(plan, before, GameConfig, keys, applyKeys, viewport.X, viewport.Y, size, globalScale, rowGap, preset);
+            status = $"Applied and verified: HUD {preset.HudLayout + 1}, all 36 {preset.Name} slots, and the selected keyboard changes. Your original settings are backed up.";
+            Chat.Print($"[{preset.Name} Layout] {status}");
         }
         catch (Exception applyError)
         {
             try
             {
-                NativeLayout.Restore(before, keys.Keys, GameConfig, characterId, applyKeys, true);
+                NativeLayout.Restore(before, keys.Keys, GameConfig, characterId, preset, applyKeys, true);
                 SaveJson(StatePath, previousState, true);
             }
             catch (Exception restoreError)
             {
                 // Keep the failed-apply snapshot as the restore target. It is the
                 // only snapshot that can undo a partial apply without losing later edits.
-                SaveJson(Path.Combine(CharacterDirectory, "recovery-settings.json"), before, true);
+                SaveJson(Path.Combine(JobDirectory, "recovery-settings.json"), before, true);
                 throw new InvalidOperationException($"Apply stopped: {applyError.Message} Automatic restore also stopped: {restoreError.Message} Use Restore original settings for recovery.", restoreError);
             }
             throw new InvalidOperationException($"Apply stopped and the previous settings were restored. {applyError.Message}", applyError);
@@ -204,13 +221,13 @@ public sealed class Plugin : IDalamudPlugin
     private void Restore()
     {
         var state = LoadState();
-        var recovery = Path.Combine(CharacterDirectory, "recovery-settings.json");
+        var recovery = Path.Combine(JobDirectory, "recovery-settings.json");
         var backup = ReadBackup(File.Exists(recovery) ? recovery : OriginalPath);
-        NativeLayout.Restore(backup, state.KeyInputsChanged, GameConfig, characterId, state.KeysApplied);
+        NativeLayout.Restore(backup, state.KeyInputsChanged, GameConfig, characterId, preset, state.KeysApplied);
         if (File.Exists(recovery)) File.Delete(recovery);
         SaveJson(StatePath, new InstallState(), true);
         status = "Original settings restored and hotbars verified.";
-        Chat.Print($"[Monk Layout] {status}");
+        Chat.Print($"[{preset.Name} Layout] {status}");
     }
 
     private InstallState LoadState() => File.Exists(StatePath)
@@ -242,5 +259,6 @@ public sealed class Plugin : IDalamudPlugin
         Interface.UiBuilder.OpenMainUi -= Open;
         Interface.UiBuilder.OpenConfigUi -= Open;
         Commands.RemoveHandler("/monklayout");
+        Commands.RemoveHandler("/whmlayout");
     }
 }

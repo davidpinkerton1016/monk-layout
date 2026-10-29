@@ -1,16 +1,31 @@
 {
-  "version": "1.2.0.0",
+  "version": "1.3.0.0",
   "distribution": "Dalamud custom repository",
   "build_errors": 0,
   "build_warnings": 0,
-  "core_checks_passed": 172,
+  "core_checks_passed": 208,
   "http_download_check_passed": true,
   "current_dalamud_manifest_parser_passed": true,
   "live_ffxiv_tested": false,
-  "plugin_sha256": "33ecad772fbad41b0fc5c07b38d7bcd4b58bb8e8c9d47d666ea4bff472287fe2",
+  "plugin_sha256": "17ab901b0c7cc8a410690b0f64584a0af0ae67e45b4c9638e537787501461165",
   "target_repository": "davidpinkerton1016/monk-layout",
   "repository": "https://github.com/davidpinkerton1016/monk-layout",
   "repository_url": "https://raw.githubusercontent.com/davidpinkerton1016/monk-layout/main/repo.json",
   "http_check_scope": "Local HTTP package download; public download verified separately after publication",
-  "character_detection_regression_checks_passed": 24
+  "character_detection_regression_checks_passed": 24,
+  "white_mage_checks_passed": 36,
+  "legacy_monk_backup_parser_passed": true,
+  "presets": {
+    "Monk": {
+      "class_job_id": 20,
+      "hud_layout": 4,
+      "bound_actions": 32
+    },
+    "White Mage": {
+      "class_job_id": 24,
+      "hud_layout": 3,
+      "bound_actions": 32,
+      "click_only_actions": 3
+    }
+  }
 }

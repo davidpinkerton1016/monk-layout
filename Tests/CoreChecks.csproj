@@ -7,5 +7,6 @@
     <Compile Include="../Source/LayoutPlan.cs" Link="LayoutPlan.cs" />
     <Compile Include="../Source/Backup.cs" Link="Backup.cs" />
     <Compile Include="../Source/PlayerSession.cs" Link="PlayerSession.cs" />
+    <Compile Include="../Source/JobPreset.cs" Link="JobPreset.cs" />
   </ItemGroup>
 </Project>

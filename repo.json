@@ -1,12 +1,12 @@
 [
   {
     "Author": "Monk Layout contributors",
-    "Name": "Monk Layout",
-    "Punchline": "Apply and restore a level 100 Monk HUD and keyboard hotbars.",
-    "Description": "One-time setup for a level 100 Monk on keyboard and mouse. Builds HUD 4, fills Monk hotbars 1-3 and optionally sets keyboard bindings. Keeps a local backup and offers Restore. Open with /monklayout.",
-    "Changelog": "Compact layout: closer hotbar rows, tighter HP and gauge spacing, and consistent gauge alignment across resolutions. Adds a Row spacing slider for fine tuning. Keeps the existing character detection and HUD save fixes.",
+    "Name": "Monk & White Mage Layouts",
+    "Punchline": "Compact level 100 Monk and White Mage HUD and keyboard presets.",
+    "Description": "One-time keyboard and mouse setup. Monk uses HUD 4; White Mage uses HUD 3 with a centered lily gauge and nearby party list. Fills the selected job's hotbars 1-3 and optionally sets keyboard bindings. Separate local backups and restore for each job. Open /monklayout or /whmlayout.",
+    "Changelog": "Adds a level 100 White Mage preset with 35 actions, 32 keyboard shortcuts, a healer-focused HUD 3 and its own backup. Retains the compact Monk HUD 4 and supports backups created by previous versions.",
     "InternalName": "MonkLayout",
-    "AssemblyVersion": "1.2.0.0",
+    "AssemblyVersion": "1.3.0.0",
     "ApplicableVersion": "2026.10.16.0000.0000",
     "DalamudApiLevel": 15,
     "LoadRequiredState": 0,
@@ -14,6 +14,8 @@
     "CanUnloadAsync": false,
     "Tags": [
       "monk",
+      "white mage",
+      "healer",
       "hud",
       "hotbars",
       "layout"
@@ -21,9 +23,9 @@
     "RepoUrl": "https://github.com/davidpinkerton1016/monk-layout",
     "IsHide": false,
     "IsTestingExclusive": false,
-    "LastUpdate": 1793298417,
-    "DownloadLinkInstall": "https://raw.githubusercontent.com/davidpinkerton1016/monk-layout/main/latest.zip?v=1.2.0.0",
-    "DownloadLinkUpdate": "https://raw.githubusercontent.com/davidpinkerton1016/monk-layout/main/latest.zip?v=1.2.0.0",
-    "DownloadLinkTesting": "https://raw.githubusercontent.com/davidpinkerton1016/monk-layout/main/latest.zip?v=1.2.0.0"
+    "LastUpdate": 1793299374,
+    "DownloadLinkInstall": "https://raw.githubusercontent.com/davidpinkerton1016/monk-layout/main/latest.zip?v=1.3.0.0",
+    "DownloadLinkUpdate": "https://raw.githubusercontent.com/davidpinkerton1016/monk-layout/main/latest.zip?v=1.3.0.0",
+    "DownloadLinkTesting": "https://raw.githubusercontent.com/davidpinkerton1016/monk-layout/main/latest.zip?v=1.3.0.0"
   }
 ]
