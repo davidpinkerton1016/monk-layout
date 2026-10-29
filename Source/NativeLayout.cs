@@ -185,7 +185,7 @@ internal static unsafe class NativeLayout
     }
 
     internal static void Apply(IReadOnlyList<ResolvedAction> plan, Backup before, IGameConfig config,
-        Dictionary<int, Binding> keyChanges, bool applyKeys, float width, float height, float size, float globalScale)
+        Dictionary<int, Binding> keyChanges, bool applyKeys, float width, float height, float size, float globalScale, float rowGap)
     {
         var hud = AddonConfig.Instance();
         var dataset = hud->ActiveDataSet;
@@ -194,7 +194,7 @@ internal static unsafe class NativeLayout
         // live layout during ChangeHudLayout and would overwrite those edits.
         var source = MemoryMarshal.Cast<byte, AddonConfigEntry>(before.HudLayouts).Slice(before.OriginalLayout * 112, 112);
         source.CopyTo(dataset->HudLayoutConfigEntries.Slice(TargetLayout * 112, 112));
-        ArrangeHud(width, height, size, globalScale);
+        ArrangeHud(width, height, size, globalScale, rowGap);
 
         var bars = RaptureHotbarModule.Instance();
         for (var b = 0; b < 3; b++)
@@ -329,10 +329,11 @@ internal static unsafe class NativeLayout
         if (visible == true) e->Alpha = 255;
     }
 
-    private static void ArrangeHud(float width, float height, float size, float globalScale)
+    private static void ArrangeHud(float width, float height, float size, float globalScale, float rowGap)
     {
-        var g = LayoutPlan.GetGeometry(width, height, size, globalScale);
+        var g = LayoutPlan.GetGeometry(width, height, size, globalScale, rowGap);
         float PercentY(float pixels) => pixels / height * 100;
+        var halfGaugeGap = 4 * g.EffectiveScale / width * 100;
         for (var b = 0; b < 3; b++)
         {
             var name = b == 0 ? "_ActionBar" : $"_ActionBar{b:00}";
@@ -342,8 +343,8 @@ internal static unsafe class NativeLayout
             e->Width = 624; e->Height = 72;
         }
         Place("_ParameterWidget", 50, PercentY(g.ParameterBottom), 7, g.Scale, true);
-        Place("JobHudMNK0", 49.5f, PercentY(g.GaugeBottom), 8, g.Scale, true);
-        Place("JobHudMNK1", 50.5f, PercentY(g.GaugeBottom), 6, g.Scale, true);
+        Place("JobHudMNK0", 50 - halfGaugeGap, PercentY(g.GaugeBottom), 8, g.Scale, true);
+        Place("JobHudMNK1", 50 + halfGaugeGap, PercentY(g.GaugeBottom), 6, g.Scale, true);
         // Use native independent target elements so the enemy cast bar can sit
         // near the character while its health and effects remain at the top.
         Place("_TargetInfo", 50, 7, 1, g.Scale, true);

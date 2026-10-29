@@ -17,11 +17,15 @@ https://raw.githubusercontent.com/davidpinkerton1016/monk-layout/main/repo.json
 
 Dalamud handles the plugin installation and updates. The setup window includes a skill preview and an option to keep your existing keyboard bindings.
 
-## Version 1.1.2.0
+## Version 1.2.0.0
+
+The compact preset reduces hotbar row spacing from 78 to 54 units at 100% effective scale. HP and Monk gauges sit closer to the bars, and the two gauges share a consistent scaled gap. The **Row spacing** slider starts at 5; use a lower value for tighter rows or a higher value for more room, then press **Apply Monk layout**.
+
+Update Monk Layout through `/xlplugins`, confirm **1.2.0.0** in the setup window, and apply again to use the new spacing. The first original-settings backup remains available through **Restore original settings**.
+
+### Version 1.1.2.0
 
 Apply now saves the live HUD through the game's layout switch before checking stored HUD entries. The earlier check ran before that save and could stop at a missing `_ActionBar` entry. The plugin returns to the starting layout before capturing its backup. Restore no longer requires the current layout to contain all preset elements.
-
-To update an existing installation, open `/xlplugins` and update Monk Layout. Confirm the setup window shows **1.1.2.0**, then try applying again.
 
 ### Version 1.1.1.0
 
@@ -29,7 +33,7 @@ Job detection now reads the active character instead of relying on the separate 
 
 ## Layout
 
-- HUD layout 4 holds three horizontal hotbars at the bottom center.
+- HUD layout 4 holds three closely stacked horizontal hotbars at the bottom center.
 - The Monk gauges and HP appear above the hotbars.
 - Paired single-target form attacks use 1–3 and Shift+1–3.
 - AoE attacks use Ctrl+1–3.
@@ -42,7 +46,7 @@ Hotbars 1–3 become unshared, which is a character-wide setting. Optional keybo
 
 This release targets Dalamud API 15, Dalamud 15.0.3.9, and game version 2026.10.16.0000.0000. A native-library compatibility check stops layout edits when the installed UI structures differ. Native game updates can require a new build.
 
-The plugin compiles and its portable checks pass. The package and repository index are validated against the current Dalamud manifest format. A live FFXIV session was unavailable, so native HUD rendering and end-to-end in-game behavior remain untested.
+The plugin compiles and its portable checks pass. The package and repository index are validated against the current Dalamud manifest format. Version 1.1.2.0 was reported to apply successfully in game. The compact spacing in 1.2.0.0 has not been inspected in a live FFXIV session.
 
 Backups stay on the player's computer inside the plugin configuration directory. The plugin does not upload settings or make network requests.
 

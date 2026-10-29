@@ -53,7 +53,7 @@ foreach (var resolution in new[] { (960f, 600f), (1280f, 720f), (1920f, 1080f), 
     {
         var g = LayoutPlan.GetGeometry(resolution.Item1, resolution.Item2, multiplier);
         Check(624 * g.Scale < resolution.Item1, "Horizontal bars must fit the window.");
-        Check(g.BarStep >= 72 * g.Scale, "Hotbar rows must not overlap.");
+        Check(g.BarStep >= 49 * g.EffectiveScale, "Visible hotbar rows must not overlap.");
         Check(g.GaugeBottom > resolution.Item2 * .45f, "Keep gauges below the center of the field.");
         Check(g.ParameterBottom < g.BarBottom - 2 * g.BarStep - 72 * g.Scale, "HP must clear all hotbars.");
     }
@@ -63,7 +63,7 @@ Reject(() => LayoutPlan.GetGeometry(1920, 1080, 2), "Out-of-range scale must be 
 foreach (var globalScale in new[] { 1f, 1.5f, 2f })
 {
     var g = LayoutPlan.GetGeometry(3840, 2160, 1, globalScale);
-    Check(g.BarStep >= 72 * g.EffectiveScale, "Global UI scaling must not cause overlapping rows.");
+    Check(g.BarStep >= 49 * g.EffectiveScale, "Global UI scaling must not cause overlapping visible rows.");
     Check(624 * g.EffectiveScale < 3840, "Scaled bars must fit on 4K displays.");
 }
 Reject(() => LayoutPlan.GetGeometry(960, 600, 1, 4), "Impractical UI scaling must be rejected before edits.");

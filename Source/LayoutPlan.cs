@@ -17,6 +17,10 @@ public static class LayoutPlan
     // Avoid the default movement keys, Q/E and mouse buttons.
     public static readonly byte[] Keys = "12345RFGZXCV".Select(c => (byte)c).ToArray();
     public const int FirstHotbarInputId = 57;
+    // Native 6x2 and 4x3 hotbars add 49 units for each extra icon row.
+    // The 72-unit addon bounds include padding that need not separate rows.
+    public const float HotbarRowPitch = 49;
+    public const float DefaultRowGap = 5;
     public static readonly ActionSpec[] Actions = Build();
 
     private static ActionSpec[] Build()
@@ -65,7 +69,7 @@ public static class LayoutPlan
         return changed;
     }
 
-    public static Geometry GetGeometry(float width, float height, float multiplier, float globalScale = 1)
+    public static Geometry GetGeometry(float width, float height, float multiplier, float globalScale = 1, float rowGap = DefaultRowGap)
     {
         if (!float.IsFinite(width) || !float.IsFinite(height) || width < 960 || height < 600)
             throw new InvalidOperationException("Use a game window at least 960 by 600 before applying the HUD.");
@@ -73,6 +77,8 @@ public static class LayoutPlan
             throw new InvalidOperationException("HUD size must be between 80% and 120%.");
         if (!float.IsFinite(globalScale) || globalScale < .5f || globalScale > 4)
             throw new InvalidOperationException("The game's global UI scaling could not be read.");
+        if (!float.IsFinite(rowGap) || rowGap < 0 || rowGap > 16)
+            throw new InvalidOperationException("Row spacing must be between 0 and 16.");
         var proposed = Math.Clamp(Math.Min(width / 1920f, height / 1080f) * multiplier / globalScale, .6f, 1.6f);
         // Use the game's discrete HUD scales and reserve room for both gauges.
         float[] scales = [.6f, .8f, .9f, 1f, 1.1f, 1.2f, 1.4f, 1.6f];
@@ -81,9 +87,9 @@ public static class LayoutPlan
         if (624 * effective > width * .9f || 400 * effective > height * .65f)
             throw new InvalidOperationException("Enlarge the game window or lower the game's global UI scale before applying this layout.");
         var bottom = height * .97f;
-        var step = 78 * effective;
-        var parameterBottom = bottom - 2 * step - 72 * effective - 8 * effective;
-        return new(scale, effective, bottom, step, parameterBottom, parameterBottom - 46 * effective);
+        var step = (HotbarRowPitch + rowGap) * effective;
+        var parameterBottom = bottom - 2 * step - 72 * effective - 4 * effective;
+        return new(scale, effective, bottom, step, parameterBottom, parameterBottom - 42 * effective);
     }
 
     public static uint AddonHash(string name)

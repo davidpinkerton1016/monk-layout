@@ -30,6 +30,7 @@ public sealed class Plugin : IDalamudPlugin
     private bool open = true;
     private bool applyKeys = true;
     private float size = 1;
+    private float rowGap = LayoutPlan.DefaultRowGap;
     private Vector2 viewport = new(1920, 1080);
     private int pending;
     private bool busy;
@@ -88,6 +89,8 @@ public sealed class Plugin : IDalamudPlugin
             else
                 ImGui.TextWrapped("Your current keyboard bindings will stay in place. The preview below shows the recommended keys only.");
             ImGui.SliderFloat("HUD size", ref size, .8f, 1.2f, "%.2fx");
+            ImGui.SliderFloat("Row spacing", ref rowGap, 0, 16, "%.0f");
+            ImGui.TextWrapped("The default compact spacing groups the hotbars, HP and Monk gauges together. Press Apply Monk layout after adjusting either slider.");
             ImGui.TextWrapped("Your first backup stays on this PC. Restore original settings returns HUD 4, the affected Monk bars and any changed keys to that backup. You can disable the plugin after applying.");
             ImGui.Spacing();
             if (compatibilityError.Length > 0) ImGui.TextWrapped(compatibilityError);
@@ -158,7 +161,7 @@ public sealed class Plugin : IDalamudPlugin
         // Resolve every action and key conflict before editing any game settings.
         var plan = NativeLayout.ResolveActions(Data);
         var globalScale = NativeLayout.GetHudGlobalScale(Gui);
-        _ = LayoutPlan.GetGeometry(viewport.X, viewport.Y, size, globalScale);
+        _ = LayoutPlan.GetGeometry(viewport.X, viewport.Y, size, globalScale, rowGap);
         var keys = applyKeys ? NativeLayout.KeyChanges() : new Dictionary<int, Binding>();
         var before = NativeLayout.Capture(characterId, GameConfig);
         var previousState = LoadState();
@@ -176,7 +179,7 @@ public sealed class Plugin : IDalamudPlugin
         SaveJson(StatePath, nextState, true);
         try
         {
-            NativeLayout.Apply(plan, before, GameConfig, keys, applyKeys, viewport.X, viewport.Y, size, globalScale);
+            NativeLayout.Apply(plan, before, GameConfig, keys, applyKeys, viewport.X, viewport.Y, size, globalScale, rowGap);
             status = "Applied and verified: HUD 4, all 36 Monk slots, and the selected keyboard changes. Your original settings are backed up.";
             Chat.Print($"[Monk Layout] {status}");
         }

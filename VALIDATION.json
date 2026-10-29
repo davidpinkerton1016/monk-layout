@@ -1,5 +1,5 @@
 {
-  "version": "1.1.2.0",
+  "version": "1.2.0.0",
   "distribution": "Dalamud custom repository",
   "build_errors": 0,
   "build_warnings": 0,
@@ -7,7 +7,7 @@
   "http_download_check_passed": true,
   "current_dalamud_manifest_parser_passed": true,
   "live_ffxiv_tested": false,
-  "plugin_sha256": "c836f8d914b562ed5aa70f9861226e1282967004019ee62e65b9a7116b96a8ee",
+  "plugin_sha256": "33ecad772fbad41b0fc5c07b38d7bcd4b58bb8e8c9d47d666ea4bff472287fe2",
   "target_repository": "davidpinkerton1016/monk-layout",
   "repository": "https://github.com/davidpinkerton1016/monk-layout",
   "repository_url": "https://raw.githubusercontent.com/davidpinkerton1016/monk-layout/main/repo.json",
