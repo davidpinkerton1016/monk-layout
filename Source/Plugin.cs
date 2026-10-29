@@ -1,0 +1,222 @@
+using System.Numerics;
+using System.Security.Cryptography;
+using System.Text.Json;
+using Dalamud.Bindings.ImGui;
+using Dalamud.Game.Command;
+using Dalamud.IoC;
+using Dalamud.Plugin;
+using Dalamud.Plugin.Services;
+using FFXIVClientStructs.FFXIV.Client.UI.Misc;
+
+namespace MonkLayout;
+
+public sealed class Plugin : IDalamudPlugin
+{
+    [PluginService] internal static IDalamudPluginInterface Interface { get; private set; } = null!;
+    [PluginService] internal static ICommandManager Commands { get; private set; } = null!;
+    [PluginService] internal static IFramework Framework { get; private set; } = null!;
+    [PluginService] internal static IPlayerState Player { get; private set; } = null!;
+    [PluginService] internal static ICondition Condition { get; private set; } = null!;
+    [PluginService] internal static IGameGui Gui { get; private set; } = null!;
+    [PluginService] internal static IDataManager Data { get; private set; } = null!;
+    [PluginService] internal static IGameConfig GameConfig { get; private set; } = null!;
+    [PluginService] internal static IChatGui Chat { get; private set; } = null!;
+    [PluginService] internal static IPluginLog Log { get; private set; } = null!;
+
+    private static readonly JsonSerializerOptions Json = new() { WriteIndented = true };
+    private bool open = true;
+    private bool applyKeys = true;
+    private float size = 1;
+    private Vector2 viewport = new(1920, 1080);
+    private int pending;
+    private bool busy;
+    private string status = "Log in as your level 100 Monk, then press Apply Monk layout.";
+    private readonly string compatibilityError;
+    private readonly string directory;
+
+    public Plugin()
+    {
+        directory = Interface.GetPluginConfigDirectory();
+        Directory.CreateDirectory(directory);
+        try
+        {
+            using var stream = File.OpenRead(typeof(AddonConfig).Assembly.Location);
+            var hash = Convert.ToHexString(SHA256.HashData(stream));
+            compatibilityError = hash == NativeLayout.StructHash ? "" : "Your Dalamud build uses a different HUD storage format. This package needs a matching build before it can apply or restore layouts.";
+        }
+        catch (Exception ex) { compatibilityError = $"Could not verify compatibility: {ex.Message}"; }
+        Commands.AddHandler("/monklayout", new CommandInfo((_, _) => open = true) { HelpMessage = "Open the Monk HUD and hotbar setup tool." });
+        Interface.UiBuilder.Draw += Draw;
+        Interface.UiBuilder.OpenMainUi += Open;
+        Interface.UiBuilder.OpenConfigUi += Open;
+        Framework.Update += OnUpdate;
+    }
+
+    private void Open() => open = true;
+    private string CharacterDirectory => Path.Combine(directory, Player.ContentId.ToString("X16"));
+    private string OriginalPath => Path.Combine(CharacterDirectory, "original-settings.json");
+    private string StatePath => Path.Combine(CharacterDirectory, "install-state.json");
+
+    private void Draw()
+    {
+        if (!open) return;
+        viewport = ImGui.GetMainViewport().Size;
+        ImGui.SetNextWindowSize(new Vector2(740, 650), ImGuiCond.FirstUseEver);
+        if (ImGui.Begin("Monk Layout", ref open))
+        {
+            ImGui.TextUnformatted("Level 100 Monk | Keyboard and mouse | PvE");
+            ImGui.Separator();
+            ImGui.TextWrapped("Apply a complete Monk setup: three horizontal hotbars, paired form skills, nearby burst buttons, and centered job gauges. The preset uses HUD layout 4 and Monk hotbars 1-3. Bars 1-3 become unshared; sharing is a character-wide setting.");
+            ImGui.Spacing();
+            ImGui.Checkbox("Apply recommended keybinds", ref applyKeys);
+            if (applyKeys)
+                ImGui.TextWrapped("Keyboard bindings apply to every job. This assigns 1-5, R, F, G, Z, X, C and V, plus Shift and Ctrl variants. Menu shortcuts that conflict are cleared. Movement and mouse bindings are protected.");
+            else
+                ImGui.TextWrapped("Your current keyboard bindings will stay in place. The preview below shows the recommended keys only.");
+            ImGui.SliderFloat("HUD size", ref size, .8f, 1.2f, "%.2fx");
+            ImGui.TextWrapped("Your first backup stays on this PC. Restore original settings returns HUD 4, the affected Monk bars and any changed keys to that backup. You can disable the plugin after applying.");
+            ImGui.Spacing();
+            if (compatibilityError.Length > 0) ImGui.TextWrapped(compatibilityError);
+            ImGui.BeginDisabled(busy || pending != 0 || compatibilityError.Length > 0);
+            if (ImGui.Button("Apply Monk layout", new Vector2(225, 36))) pending = 1;
+            ImGui.SameLine();
+            ImGui.BeginDisabled(!Player.IsLoaded || !File.Exists(OriginalPath));
+            if (ImGui.Button("Restore original settings", new Vector2(225, 36))) pending = 2;
+            ImGui.EndDisabled();
+            ImGui.EndDisabled();
+            ImGui.Spacing();
+            ImGui.TextWrapped(status);
+            ImGui.Separator();
+            if (ImGui.CollapsingHeader("Key and skill preview", ImGuiTreeNodeFlags.DefaultOpen))
+            {
+                if (ImGui.BeginTable("MonkKeys", 4, ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg | ImGuiTableFlags.ScrollY, new Vector2(0, 290)))
+                {
+                    ImGui.TableSetupColumn("Key");
+                    ImGui.TableSetupColumn("Normal");
+                    ImGui.TableSetupColumn("Shift");
+                    ImGui.TableSetupColumn("Ctrl");
+                    ImGui.TableHeadersRow();
+                    for (var s = 0; s < 12; s++)
+                    {
+                        ImGui.TableNextRow();
+                        ImGui.TableNextColumn(); ImGui.TextUnformatted(((char)LayoutPlan.Keys[s]).ToString());
+                        for (var b = 0; b < 3; b++)
+                        {
+                            ImGui.TableNextColumn(); ImGui.TextWrapped(LayoutPlan.Actions[b * 12 + s].Label);
+                        }
+                    }
+                    ImGui.EndTable();
+                }
+            }
+        }
+        ImGui.End();
+    }
+
+    private void OnUpdate(IFramework _)
+    {
+        if (pending == 0 || busy) return;
+        var command = pending; pending = 0; busy = true;
+        try
+        {
+            if (compatibilityError.Length > 0) throw new InvalidOperationException(compatibilityError);
+            NativeLayout.CheckReady(Player, Condition, Gui, command == 1);
+            Directory.CreateDirectory(CharacterDirectory);
+            if (command == 1) Apply(); else Restore();
+        }
+        catch (Exception ex)
+        {
+            status = ex.Message;
+            Chat.PrintError($"[Monk Layout] {ex.Message}");
+            Log.Error(ex, "Monk layout operation failed");
+        }
+        finally { busy = false; }
+    }
+
+    private void Apply()
+    {
+        // Resolve every action and key conflict before editing any game settings.
+        var plan = NativeLayout.ResolveActions(Data);
+        var globalScale = NativeLayout.GetHudGlobalScale(Gui);
+        _ = LayoutPlan.GetGeometry(viewport.X, viewport.Y, size, globalScale);
+        var keys = applyKeys ? NativeLayout.KeyChanges() : new Dictionary<int, Binding>();
+        var before = NativeLayout.Capture(Player, GameConfig);
+        var previousState = LoadState();
+        if (File.Exists(OriginalPath)) NativeLayout.ValidateBackup(ReadBackup(OriginalPath), Player.ContentId);
+        else SaveJson(OriginalPath, before, false);
+        var transactionPath = Path.Combine(CharacterDirectory, $"before-apply-{DateTime.UtcNow:yyyyMMdd-HHmmss-fffffff}.json");
+        SaveJson(transactionPath, before, false);
+        // Save the restore index before editing, so it survives an interrupted apply.
+        var nextState = new InstallState
+        {
+            HasApplied = true,
+            KeysApplied = applyKeys || previousState.KeysApplied,
+            KeyInputsChanged = previousState.KeyInputsChanged.Union(keys.Keys).ToHashSet()
+        };
+        SaveJson(StatePath, nextState, true);
+        try
+        {
+            NativeLayout.Apply(plan, before, GameConfig, keys, applyKeys, viewport.X, viewport.Y, size, globalScale);
+            status = "Applied and verified: HUD 4, all 36 Monk slots, and the selected keyboard changes. Your original settings are backed up.";
+            Chat.Print($"[Monk Layout] {status}");
+        }
+        catch (Exception applyError)
+        {
+            try
+            {
+                NativeLayout.Restore(before, keys.Keys, GameConfig, Player, applyKeys, true);
+                SaveJson(StatePath, previousState, true);
+            }
+            catch (Exception restoreError)
+            {
+                // Keep the failed-apply snapshot as the restore target. It is the
+                // only snapshot that can undo a partial apply without losing later edits.
+                SaveJson(Path.Combine(CharacterDirectory, "recovery-settings.json"), before, true);
+                throw new InvalidOperationException($"Apply stopped: {applyError.Message} Automatic restore also stopped: {restoreError.Message} Use Restore original settings for recovery.", restoreError);
+            }
+            throw new InvalidOperationException($"Apply stopped and the previous settings were restored. {applyError.Message}", applyError);
+        }
+    }
+
+    private void Restore()
+    {
+        var state = LoadState();
+        var recovery = Path.Combine(CharacterDirectory, "recovery-settings.json");
+        var backup = ReadBackup(File.Exists(recovery) ? recovery : OriginalPath);
+        NativeLayout.Restore(backup, state.KeyInputsChanged, GameConfig, Player, state.KeysApplied);
+        if (File.Exists(recovery)) File.Delete(recovery);
+        SaveJson(StatePath, new InstallState(), true);
+        status = "Original settings restored and hotbars verified.";
+        Chat.Print($"[Monk Layout] {status}");
+    }
+
+    private InstallState LoadState() => File.Exists(StatePath)
+        ? JsonSerializer.Deserialize<InstallState>(File.ReadAllText(StatePath), Json) ?? throw new InvalidOperationException("The local restore index could not be read.")
+        : new InstallState();
+
+    private static Backup ReadBackup(string path) => JsonSerializer.Deserialize<Backup>(File.ReadAllText(path), Json)
+        ?? throw new InvalidOperationException("The local backup could not be read.");
+
+    private static void SaveJson<T>(string path, T value, bool overwrite)
+    {
+        var temp = path + ".tmp-" + Guid.NewGuid().ToString("N");
+        try
+        {
+            using (var fs = new FileStream(temp, FileMode.CreateNew, FileAccess.Write, FileShare.None))
+            {
+                JsonSerializer.Serialize(fs, value, Json);
+                fs.Flush(true);
+            }
+            File.Move(temp, path, overwrite);
+        }
+        finally { if (File.Exists(temp)) File.Delete(temp); }
+    }
+
+    public void Dispose()
+    {
+        Framework.Update -= OnUpdate;
+        Interface.UiBuilder.Draw -= Draw;
+        Interface.UiBuilder.OpenMainUi -= Open;
+        Interface.UiBuilder.OpenConfigUi -= Open;
+        Commands.RemoveHandler("/monklayout");
+    }
+}

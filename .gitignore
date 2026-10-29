@@ -1,0 +1,11 @@
+**/bin/
+**/obj/
+**/__pycache__/
+*.pdb
+*.tmp
+*.log
+original-settings.json
+recovery-settings.json
+install-state.json
+before-apply-*.json
+test-output/
