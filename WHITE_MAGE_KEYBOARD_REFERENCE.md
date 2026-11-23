@@ -1,5 +1,7 @@
 # White Mage keyboard layout
 
+This is the original manual profile. For the Wrath Combo profile added in 1.4.0.0, open `/whmwrath` and use the [Wrath keyboard reference](WHITE_MAGE_WRATH_KEYBOARD_REFERENCE.md).
+
 Level 100 PvE preset. Open `/whmlayout` and choose **Apply White Mage layout**. This preset uses HUD 3, White Mage hotbars 1-3, the compact spacing from the Monk preset, a centered lily gauge and a party list near the center-left of the screen.
 
 | Key | Normal | Shift | Ctrl |

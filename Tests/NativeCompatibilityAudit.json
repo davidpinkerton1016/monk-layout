@@ -1,0 +1,2521 @@
+{
+  "OldHash": "F5A2C68CCECD3E199BDA572050E98902B2E7594066C95DC7826C2D4297CD0564",
+  "NewHash": "FD39ED3C6D69E8292E1C458BA4688C101E63AEAB3EE2F6248852D55746FB4306",
+  "Reports": [
+    {
+      "Type": "FFXIVClientStructs.FFXIV.Client.System.Framework.Framework",
+      "OldSize": 13784,
+      "NewSize": 13784,
+      "OldPack": 0,
+      "NewPack": 0,
+      "SameLayout": true,
+      "SameFields": true,
+      "RemovedFields": [],
+      "AddedFields": [],
+      "Fields": [
+        {
+          "Name": "IsDestroying",
+          "Type": "System.Boolean",
+          "Offset": 8
+        },
+        {
+          "Name": "IsExiting",
+          "Type": "System.Boolean",
+          "Offset": 9
+        },
+        {
+          "Name": "IsFreed",
+          "Type": "System.Boolean",
+          "Offset": 10
+        },
+        {
+          "Name": "ExitCode",
+          "Type": "System.Int32",
+          "Offset": 12
+        },
+        {
+          "Name": "SystemConfig",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.Configuration.SystemConfig",
+          "Offset": 16
+        },
+        {
+          "Name": "DevConfig",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.Configuration.DevConfig",
+          "Offset": 1120
+        },
+        {
+          "Name": "CharamakeAvatarSaveData",
+          "Type": "FFXIVClientStructs.FFXIV.Client.Game.CharamakeAvatarSaveDataContainer*",
+          "Offset": 1392
+        },
+        {
+          "Name": "ClientLanguage",
+          "Type": "System.Byte",
+          "Offset": 1408
+        },
+        {
+          "Name": "Region",
+          "Type": "System.Byte",
+          "Offset": 1409
+        },
+        {
+          "Name": "Cursor",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.Input.Cursor*",
+          "Offset": 1416
+        },
+        {
+          "Name": "CallerWindow",
+          "Type": "System.IntPtr",
+          "Offset": 1424
+        },
+        {
+          "Name": "ConfigPath",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.File.FileAccessPath",
+          "Offset": 1432
+        },
+        {
+          "Name": "GameWindow",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.Framework.GameWindow*",
+          "Offset": 1960
+        },
+        {
+          "Name": "GamepadInputs",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.Input.GamepadInputData",
+          "Offset": 1968
+        },
+        {
+          "Name": "CursorInputs",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.Input.CursorInputData",
+          "Offset": 2556
+        },
+        {
+          "Name": "KeyboardInputs",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.Input.KeyboardInputData",
+          "Offset": 2604
+        },
+        {
+          "Name": "GamepadInputs2",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.Input.GamepadInputData",
+          "Offset": 3776
+        },
+        {
+          "Name": "CursorInputs2",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.Input.CursorInputData",
+          "Offset": 4364
+        },
+        {
+          "Name": "KeyboardInputs2",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.Input.KeyboardInputData",
+          "Offset": 4412
+        },
+        {
+          "Name": "NetworkModuleProxy",
+          "Type": "FFXIVClientStructs.FFXIV.Client.Network.NetworkModuleProxy*",
+          "Offset": 5752
+        },
+        {
+          "Name": "IsNetworkModuleInitialized",
+          "Type": "System.Boolean",
+          "Offset": 5760
+        },
+        {
+          "Name": "EnableNetworking",
+          "Type": "System.Boolean",
+          "Offset": 5761
+        },
+        {
+          "Name": "UtcTime",
+          "Type": "FFXIVClientStructs.FFXIV.Common.TimePoint",
+          "Offset": 5768
+        },
+        {
+          "Name": "TimerResolutionMillis",
+          "Type": "System.UInt32",
+          "Offset": 5792
+        },
+        {
+          "Name": "PerformanceCounterFrequency",
+          "Type": "System.Int64",
+          "Offset": 5800
+        },
+        {
+          "Name": "PerformanceCounterValue",
+          "Type": "System.Int64",
+          "Offset": 5808
+        },
+        {
+          "Name": "FrameDeltaTime",
+          "Type": "System.Single",
+          "Offset": 5824
+        },
+        {
+          "Name": "RealFrameDeltaTime",
+          "Type": "System.Single",
+          "Offset": 5828
+        },
+        {
+          "Name": "FrameDeltaTimeOverride",
+          "Type": "System.Single",
+          "Offset": 5832
+        },
+        {
+          "Name": "FrameDeltaFactor",
+          "Type": "System.Single",
+          "Offset": 5836
+        },
+        {
+          "Name": "FrameCounter",
+          "Type": "System.UInt32",
+          "Offset": 5840
+        },
+        {
+          "Name": "FrameDeltaTimeMSInt",
+          "Type": "System.Int64",
+          "Offset": 5848
+        },
+        {
+          "Name": "FrameDeltaTimeMSRem",
+          "Type": "System.Single",
+          "Offset": 5856
+        },
+        {
+          "Name": "FrameDeltaTimeUSInt",
+          "Type": "System.Int64",
+          "Offset": 5864
+        },
+        {
+          "Name": "FrameDeltaTimeUSRem",
+          "Type": "System.Single",
+          "Offset": 5872
+        },
+        {
+          "Name": "TaskManager",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.Framework.TaskManager",
+          "Offset": 5888
+        },
+        {
+          "Name": "ClientTime",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.Timer.ClientTime",
+          "Offset": 6000
+        },
+        {
+          "Name": "GameSpeedMultiplier",
+          "Type": "System.Single",
+          "Offset": 6072
+        },
+        {
+          "Name": "FrameRate",
+          "Type": "System.Single",
+          "Offset": 6092
+        },
+        {
+          "Name": "PauseFrameTicksCounter",
+          "Type": "System.Int32",
+          "Offset": 6096
+        },
+        {
+          "Name": "NextFrameDeltaTimeOverride",
+          "Type": "System.Single",
+          "Offset": 6100
+        },
+        {
+          "Name": "WindowInactive",
+          "Type": "System.Boolean",
+          "Offset": 6104
+        },
+        {
+          "Name": "UseSqPack",
+          "Type": "System.Int32",
+          "Offset": 6116
+        },
+        {
+          "Name": "DataPathType",
+          "Type": "System.Int32",
+          "Offset": 6120
+        },
+        {
+          "Name": "_gamePath",
+          "Type": "FFXIVClientStructs.Interop.Generated.FixedSizeArray260\u00601\u003CSystem.Char\u003E",
+          "Offset": 6644
+        },
+        {
+          "Name": "_sqPackPath",
+          "Type": "FFXIVClientStructs.Interop.Generated.FixedSizeArray260\u00601\u003CSystem.Char\u003E",
+          "Offset": 7684
+        },
+        {
+          "Name": "_userPath",
+          "Type": "FFXIVClientStructs.Interop.Generated.FixedSizeArray260\u00601\u003CSystem.Char\u003E",
+          "Offset": 8724
+        },
+        {
+          "Name": "ExcelModuleInterface",
+          "Type": "FFXIVClientStructs.FFXIV.Component.Excel.ExcelModuleInterface*",
+          "Offset": 11064
+        },
+        {
+          "Name": "ExdModule",
+          "Type": "FFXIVClientStructs.FFXIV.Component.Exd.ExdModule*",
+          "Offset": 11072
+        },
+        {
+          "Name": "BGCollisionModule",
+          "Type": "FFXIVClientStructs.FFXIV.Common.Component.BGCollision.BGCollisionModule*",
+          "Offset": 11096
+        },
+        {
+          "Name": "UIModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.UIModule*",
+          "Offset": 11112
+        },
+        {
+          "Name": "UIClipboard",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.UIClipboard*",
+          "Offset": 11120
+        },
+        {
+          "Name": "EnvironmentManager",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.Framework.EnvironmentManager*",
+          "Offset": 11136
+        },
+        {
+          "Name": "SoundManager",
+          "Type": "FFXIVClientStructs.FFXIV.Client.Sound.SoundManager*",
+          "Offset": 11144
+        },
+        {
+          "Name": "ClipSoundManager",
+          "Type": "FFXIVClientStructs.FFXIV.Client.Sound.ClipSoundManager*",
+          "Offset": 11152
+        },
+        {
+          "Name": "LuaState",
+          "Type": "FFXIVClientStructs.FFXIV.Common.Lua.LuaState",
+          "Offset": 11216
+        },
+        {
+          "Name": "_gameVersion",
+          "Type": "FFXIVClientStructs.Interop.Generated.FixedSizeArray256\u00601\u003CSystem.Byte\u003E",
+          "Offset": 11256
+        },
+        {
+          "Name": "_exVersions",
+          "Type": "FFXIVClientStructs.Interop.Generated.FixedSizeArray64\u00601\u003CFFXIVClientStructs.FFXIV.Client.System.Framework.Framework/ExVersionString\u003E",
+          "Offset": 11512
+        },
+        {
+          "Name": "UseWatchDogThread",
+          "Type": "System.Boolean",
+          "Offset": 13576
+        },
+        {
+          "Name": "FramesUntilDebugCheck",
+          "Type": "System.Int32",
+          "Offset": 13592
+        },
+        {
+          "Name": "IsSteamGame",
+          "Type": "System.Boolean",
+          "Offset": 13756
+        },
+        {
+          "Name": "SteamApi",
+          "Type": "FFXIVClientStructs.FFXIV.Component.SteamApi.SteamApi*",
+          "Offset": 13760
+        },
+        {
+          "Name": "SteamApiLibraryHandle",
+          "Type": "System.IntPtr",
+          "Offset": 13768
+        },
+        {
+          "Name": "VirtualTable",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.Framework.Framework/FrameworkVirtualTable*",
+          "Offset": 0
+        }
+      ],
+      "UsedMethods": [
+        {
+          "Method": "FFXIVClientStructs.FFXIV.Client.System.Framework.Framework* FFXIVClientStructs.FFXIV.Client.System.Framework.Framework::Instance()",
+          "ExistsBefore": true,
+          "SameIL": true,
+          "SameAttributes": true,
+          "NewILHash": "B74FC406A6623307EE57AEC248EBE0F6065A6AFD6B4EF183C54B26B4BCD61639"
+        },
+        {
+          "Method": "FFXIVClientStructs.FFXIV.Client.UI.UIModule* FFXIVClientStructs.FFXIV.Client.System.Framework.Framework::GetUIModule()",
+          "ExistsBefore": true,
+          "SameIL": true,
+          "SameAttributes": true,
+          "NewILHash": "D4D1F647FD21FA7571EC115827F112BDFDB706D00D17DA362FF3D423EA6D66A3"
+        },
+        {
+          "Method": "System.String FFXIVClientStructs.FFXIV.Client.System.Framework.Framework::get_GameVersionString()",
+          "ExistsBefore": true,
+          "SameIL": true,
+          "SameAttributes": true,
+          "NewILHash": "F13264A71A8A64D8015BDD6B8073022C1D07CA7ADBEF05A63B2BB60F933FCDF7"
+        }
+      ]
+    },
+    {
+      "Type": "FFXIVClientStructs.FFXIV.Client.System.Input.InputData",
+      "OldSize": 2512,
+      "NewSize": 2512,
+      "OldPack": 0,
+      "NewPack": 0,
+      "SameLayout": true,
+      "SameFields": true,
+      "RemovedFields": [],
+      "AddedFields": [],
+      "Fields": [
+        {
+          "Name": "GamepadInputs",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.Input.GamepadInputData",
+          "Offset": 8
+        },
+        {
+          "Name": "GamepadInputs2",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.Input.GamepadInputData",
+          "Offset": 596
+        },
+        {
+          "Name": "UIFilteredCursorInputs",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.Input.CursorInputData",
+          "Offset": 1184
+        },
+        {
+          "Name": "CursorInputs",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.Input.CursorInputData",
+          "Offset": 1232
+        },
+        {
+          "Name": "KeyboardInputs",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.Input.KeyboardInputData",
+          "Offset": 1280
+        },
+        {
+          "Name": "CurrentGamepadModifier",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.Input.GamepadModifierFlag",
+          "Offset": 2452
+        },
+        {
+          "Name": "CurrentKeyModifier",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.Input.KeyModifierFlag",
+          "Offset": 2453
+        },
+        {
+          "Name": "CurrentMouseDragButtons",
+          "Type": "System.Byte",
+          "Offset": 2476
+        },
+        {
+          "Name": "GamepadInputs2ButtonsChanged",
+          "Type": "System.Boolean",
+          "Offset": 2478
+        },
+        {
+          "Name": "CursorPositionsChanged",
+          "Type": "System.Boolean",
+          "Offset": 2479
+        },
+        {
+          "Name": "KeyboardInputsChanged",
+          "Type": "System.Boolean",
+          "Offset": 2480
+        },
+        {
+          "Name": "UIFilteredCursorInputsButtonsChanged",
+          "Type": "System.Boolean",
+          "Offset": 2481
+        },
+        {
+          "Name": "GamepadInputsButtonsChanged",
+          "Type": "System.Boolean",
+          "Offset": 2482
+        },
+        {
+          "Name": "CurrentGamepadInputsFilter",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.Input.GamepadInputsFilter",
+          "Offset": 2483
+        },
+        {
+          "Name": "NumKeybinds",
+          "Type": "System.Int32",
+          "Offset": 2484
+        },
+        {
+          "Name": "Keybinds",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.Input.Keybind*",
+          "Offset": 2488
+        },
+        {
+          "Name": "InputCodeModifiedCallback",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.Input.InputData/InputCodeModifiedInterface*",
+          "Offset": 2504
+        },
+        {
+          "Name": "VirtualTable",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.Input.InputData/InputDataVirtualTable*",
+          "Offset": 0
+        }
+      ],
+      "UsedMethods": [
+        {
+          "Method": "System.Span\u00601\u003CFFXIVClientStructs.FFXIV.Client.System.Input.Keybind\u003E FFXIVClientStructs.FFXIV.Client.System.Input.InputData::GetKeybindSpan()",
+          "ExistsBefore": true,
+          "SameIL": true,
+          "SameAttributes": true,
+          "NewILHash": "4CC3556C10A896631132D14CFA8840259DC393543D46DCD464EE465764D254A4"
+        },
+        {
+          "Method": "System.Void FFXIVClientStructs.FFXIV.Client.System.Input.InputData::SetKeybind(FFXIVClientStructs.FFXIV.Client.System.Input.InputId,FFXIVClientStructs.FFXIV.Client.System.Input.Keybind*)",
+          "ExistsBefore": true,
+          "SameIL": true,
+          "SameAttributes": true,
+          "NewILHash": "5AB656F07D070832853BA37F9E4C0A281B88939E6ADF8E4C1190530A2EB38FB4"
+        },
+        {
+          "Method": "FFXIVClientStructs.FFXIV.Client.System.Input.Keybind* FFXIVClientStructs.FFXIV.Client.System.Input.InputData::GetKeybind(FFXIVClientStructs.FFXIV.Client.System.Input.InputId)",
+          "ExistsBefore": true,
+          "SameIL": true,
+          "SameAttributes": true,
+          "NewILHash": "7A79F4762DB33AF65CDEB917EEE541B31DFD807AACAEAA63FD750EBEE73B6F2B"
+        },
+        {
+          "Method": "FFXIVClientStructs.FFXIV.Client.System.Input.Keybind* FFXIVClientStructs.FFXIV.Client.System.Input.InputData::GetKeybind(System.Int32)",
+          "ExistsBefore": true,
+          "SameIL": true,
+          "SameAttributes": true,
+          "NewILHash": "AFCDACE63812C228B457ECAF0B7B1C53633C1CAA8AADF3CBF96495AF96D7E96F"
+        }
+      ]
+    },
+    {
+      "Type": "FFXIVClientStructs.FFXIV.Client.System.Input.InputId",
+      "OldSize": -1,
+      "NewSize": -1,
+      "OldPack": -1,
+      "NewPack": -1,
+      "SameLayout": true,
+      "SameFields": true,
+      "RemovedFields": [],
+      "AddedFields": [],
+      "Fields": [
+        {
+          "Name": "value__",
+          "Type": "System.Int32",
+          "Offset": -1
+        }
+      ],
+      "UsedMethods": []
+    },
+    {
+      "Type": "FFXIVClientStructs.FFXIV.Client.System.Input.Keybind",
+      "OldSize": 11,
+      "NewSize": 11,
+      "OldPack": 0,
+      "NewPack": 0,
+      "SameLayout": true,
+      "SameFields": true,
+      "RemovedFields": [],
+      "AddedFields": [],
+      "Fields": [
+        {
+          "Name": "_keySettings",
+          "Type": "FFXIVClientStructs.Interop.Generated.FixedSizeArray2\u00601\u003CFFXIVClientStructs.FFXIV.Client.System.Input.KeySetting\u003E",
+          "Offset": 0
+        },
+        {
+          "Name": "_gamepadSettings",
+          "Type": "FFXIVClientStructs.Interop.Generated.FixedSizeArray2\u00601\u003CFFXIVClientStructs.FFXIV.Client.System.Input.KeySetting\u003E",
+          "Offset": 4
+        },
+        {
+          "Name": "Unk8",
+          "Type": "System.UInt16",
+          "Offset": 8
+        },
+        {
+          "Name": "UnkA",
+          "Type": "System.Byte",
+          "Offset": 10
+        }
+      ],
+      "UsedMethods": [
+        {
+          "Method": "System.Span\u00601\u003CFFXIVClientStructs.FFXIV.Client.System.Input.KeySetting\u003E FFXIVClientStructs.FFXIV.Client.System.Input.Keybind::get_KeySettings()",
+          "ExistsBefore": true,
+          "SameIL": true,
+          "SameAttributes": true,
+          "NewILHash": "5D2E4B5FDE5FD55B2E2777750822199BE9D94CD5E944237D7499E0509ADFDC2E"
+        }
+      ]
+    },
+    {
+      "Type": "FFXIVClientStructs.FFXIV.Client.System.Input.KeyModifierFlag",
+      "OldSize": -1,
+      "NewSize": -1,
+      "OldPack": -1,
+      "NewPack": -1,
+      "SameLayout": true,
+      "SameFields": true,
+      "RemovedFields": [],
+      "AddedFields": [],
+      "Fields": [
+        {
+          "Name": "value__",
+          "Type": "System.Byte",
+          "Offset": -1
+        }
+      ],
+      "UsedMethods": []
+    },
+    {
+      "Type": "FFXIVClientStructs.FFXIV.Client.System.Input.KeySetting",
+      "OldSize": 2,
+      "NewSize": 2,
+      "OldPack": 0,
+      "NewPack": 0,
+      "SameLayout": true,
+      "SameFields": true,
+      "RemovedFields": [],
+      "AddedFields": [],
+      "Fields": [
+        {
+          "Name": "Key",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.Input.SeVirtualKey",
+          "Offset": 0
+        },
+        {
+          "Name": "KeyModifier",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.Input.KeyModifierFlag",
+          "Offset": 1
+        },
+        {
+          "Name": "GamepadModifier",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.Input.GamepadModifierFlag",
+          "Offset": 1
+        }
+      ],
+      "UsedMethods": []
+    },
+    {
+      "Type": "FFXIVClientStructs.FFXIV.Client.System.Input.SeVirtualKey",
+      "OldSize": -1,
+      "NewSize": -1,
+      "OldPack": -1,
+      "NewPack": -1,
+      "SameLayout": true,
+      "SameFields": true,
+      "RemovedFields": [],
+      "AddedFields": [],
+      "Fields": [
+        {
+          "Name": "value__",
+          "Type": "System.Byte",
+          "Offset": -1
+        }
+      ],
+      "UsedMethods": []
+    },
+    {
+      "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.AddonConfig",
+      "OldSize": 112,
+      "NewSize": 112,
+      "OldPack": 0,
+      "NewPack": 0,
+      "SameLayout": true,
+      "SameFields": true,
+      "RemovedFields": [],
+      "AddedFields": [],
+      "Fields": [
+        {
+          "Name": "IsLoaded",
+          "Type": "System.Boolean",
+          "Offset": 80
+        },
+        {
+          "Name": "ActiveDataSet",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.AddonConfigDataSet*",
+          "Offset": 88
+        },
+        {
+          "Name": "DataSets",
+          "Type": "FFXIVClientStructs.STD.StdList\u00601\u003CFFXIVClientStructs.Interop.Pointer\u00601\u003CFFXIVClientStructs.FFXIV.Client.UI.Misc.AddonConfigDataSet\u003E\u003E",
+          "Offset": 96
+        },
+        {
+          "Name": "UserFileEvent",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.UserFileManager/UserFileEvent",
+          "Offset": 0
+        },
+        {
+          "Name": "CharacterContentId",
+          "Type": "System.UInt64",
+          "Offset": 8
+        },
+        {
+          "Name": "UserFileManager",
+          "Type": "System.IntPtr",
+          "Offset": 16
+        },
+        {
+          "Name": "TempDataPtr",
+          "Type": "System.IntPtr",
+          "Offset": 24
+        },
+        {
+          "Name": "TempDataBytesWritten",
+          "Type": "System.UInt32",
+          "Offset": 32
+        },
+        {
+          "Name": "HasChanges",
+          "Type": "System.Boolean",
+          "Offset": 68
+        },
+        {
+          "Name": "IsSavePending",
+          "Type": "System.Boolean",
+          "Offset": 69
+        },
+        {
+          "Name": "IsVirtual",
+          "Type": "System.Boolean",
+          "Offset": 70
+        },
+        {
+          "Name": "VirtualTable",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.AddonConfig/AddonConfigVirtualTable*",
+          "Offset": 0
+        }
+      ],
+      "UsedMethods": [
+        {
+          "Method": "FFXIVClientStructs.FFXIV.Client.UI.Misc.AddonConfig* FFXIVClientStructs.FFXIV.Client.UI.Misc.AddonConfig::Instance()",
+          "ExistsBefore": true,
+          "SameIL": true,
+          "SameAttributes": true,
+          "NewILHash": "A73FD8D82AA34132530704502BA4F09DDC88CF7894A90E325F76818C1DB76483"
+        },
+        {
+          "Method": "System.Void FFXIVClientStructs.FFXIV.Client.UI.Misc.AddonConfig::ChangeHudLayout(System.UInt32,System.Boolean,System.Boolean)",
+          "ExistsBefore": true,
+          "SameIL": true,
+          "SameAttributes": true,
+          "NewILHash": "F3A90948C05DE4008D9C6E516FD2586001198EE6D57D74A646BD46E195043E3E"
+        },
+        {
+          "Method": "System.Void FFXIVClientStructs.FFXIV.Client.UI.Misc.AddonConfig::SaveFile(System.Boolean)",
+          "ExistsBefore": true,
+          "SameIL": true,
+          "SameAttributes": true,
+          "NewILHash": "66A61DC6F5B6F4D9F18350CAC9652B40005BAD8B1DC5418D0C81E3AFE0EB27C8"
+        }
+      ]
+    },
+    {
+      "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.AddonConfigDataSet",
+      "OldSize": 56400,
+      "NewSize": 56400,
+      "OldPack": 0,
+      "NewPack": 0,
+      "SameLayout": true,
+      "SameFields": true,
+      "RemovedFields": [],
+      "AddedFields": [],
+      "Fields": [
+        {
+          "Name": "Name",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.String.Utf8String",
+          "Offset": 0
+        },
+        {
+          "Name": "UsedAddonConfigEntries",
+          "Type": "FFXIVClientStructs.STD.StdList\u00601\u003CFFXIVClientStructs.Interop.Pointer\u00601\u003CFFXIVClientStructs.FFXIV.Client.UI.Misc.AddonConfigEntry\u003E\u003E",
+          "Offset": 104
+        },
+        {
+          "Name": "UnusedAddonConfigEntries",
+          "Type": "FFXIVClientStructs.STD.StdList\u00601\u003CFFXIVClientStructs.Interop.Pointer\u00601\u003CFFXIVClientStructs.FFXIV.Client.UI.Misc.AddonConfigEntry\u003E\u003E",
+          "Offset": 120
+        },
+        {
+          "Name": "_configEntries",
+          "Type": "FFXIVClientStructs.Interop.Generated.FixedSizeArray1103\u00601\u003CFFXIVClientStructs.FFXIV.Client.UI.Misc.AddonConfigEntry\u003E",
+          "Offset": 136
+        },
+        {
+          "Name": "_hudLayoutNames",
+          "Type": "FFXIVClientStructs.Interop.Generated.FixedSizeArray4\u00601\u003CFFXIVClientStructs.FFXIV.Client.System.String.Utf8String\u003E",
+          "Offset": 39848
+        },
+        {
+          "Name": "_hudLayoutConfigEntries",
+          "Type": "FFXIVClientStructs.Interop.Generated.FixedSizeArray448\u00601\u003CFFXIVClientStructs.FFXIV.Client.UI.Misc.AddonConfigEntry\u003E",
+          "Offset": 40264
+        },
+        {
+          "Name": "CurrentHudLayout",
+          "Type": "System.Int32",
+          "Offset": 56392
+        }
+      ],
+      "UsedMethods": [
+        {
+          "Method": "System.Span\u00601\u003CFFXIVClientStructs.FFXIV.Client.UI.Misc.AddonConfigEntry\u003E FFXIVClientStructs.FFXIV.Client.UI.Misc.AddonConfigDataSet::get_HudLayoutConfigEntries()",
+          "ExistsBefore": true,
+          "SameIL": true,
+          "SameAttributes": true,
+          "NewILHash": "F2E2D78110AC82A2A3174ED1B58E45A964C55A84FCF9C190DCFD885CE6D8A143"
+        }
+      ]
+    },
+    {
+      "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.AddonConfigEntry",
+      "OldSize": 36,
+      "NewSize": 36,
+      "OldPack": 0,
+      "NewPack": 0,
+      "SameLayout": true,
+      "SameFields": true,
+      "RemovedFields": [],
+      "AddedFields": [],
+      "Fields": [
+        {
+          "Name": "AddonNameHash",
+          "Type": "System.UInt32",
+          "Offset": 0
+        },
+        {
+          "Name": "X",
+          "Type": "System.Single",
+          "Offset": 4
+        },
+        {
+          "Name": "Y",
+          "Type": "System.Single",
+          "Offset": 8
+        },
+        {
+          "Name": "Scale",
+          "Type": "System.Single",
+          "Offset": 12
+        },
+        {
+          "Name": "ElementFlags",
+          "Type": "System.UInt32",
+          "Offset": 16
+        },
+        {
+          "Name": "Width",
+          "Type": "System.UInt16",
+          "Offset": 20
+        },
+        {
+          "Name": "Height",
+          "Type": "System.UInt16",
+          "Offset": 22
+        },
+        {
+          "Name": "ByteValue1",
+          "Type": "System.Byte",
+          "Offset": 24
+        },
+        {
+          "Name": "ByteValue2",
+          "Type": "System.Byte",
+          "Offset": 25
+        },
+        {
+          "Name": "ByteValue3",
+          "Type": "System.Byte",
+          "Offset": 26
+        },
+        {
+          "Name": "Alpha",
+          "Type": "System.Byte",
+          "Offset": 27
+        },
+        {
+          "Name": "HasValue",
+          "Type": "System.Boolean",
+          "Offset": 32
+        },
+        {
+          "Name": "IsOpen",
+          "Type": "System.Boolean",
+          "Offset": 33
+        }
+      ],
+      "UsedMethods": []
+    },
+    {
+      "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule",
+      "OldSize": 177144,
+      "NewSize": 177144,
+      "OldPack": 0,
+      "NewPack": 0,
+      "SameLayout": true,
+      "SameFields": true,
+      "RemovedFields": [],
+      "AddedFields": [],
+      "Fields": [
+        {
+          "Name": "UIModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.UIModule*",
+          "Offset": 80
+        },
+        {
+          "Name": "ModuleReady",
+          "Type": "System.Boolean",
+          "Offset": 88
+        },
+        {
+          "Name": "ActiveHotbarClassJobId",
+          "Type": "System.Byte",
+          "Offset": 89
+        },
+        {
+          "Name": "DatFileLoadedSuccessfully",
+          "Type": "System.Boolean",
+          "Offset": 90
+        },
+        {
+          "Name": "_expacJobHotbarsCreated",
+          "Type": "FFXIVClientStructs.Interop.Generated.FixedSizeArray15\u00601\u003CSystem.Boolean\u003E",
+          "Offset": 92
+        },
+        {
+          "Name": "_pvPHotbarsCreated",
+          "Type": "FFXIVClientStructs.Interop.Generated.FixedSizeArray22\u00601\u003CSystem.Boolean\u003E",
+          "Offset": 107
+        },
+        {
+          "Name": "ClearCallbackPresent",
+          "Type": "System.Boolean",
+          "Offset": 131
+        },
+        {
+          "Name": "MateriaMeldState",
+          "Type": "System.UInt32",
+          "Offset": 132
+        },
+        {
+          "Name": "_hotbarShareStateBitmask",
+          "Type": "FFXIVClientStructs.Interop.Generated.FixedSizeArray4\u00601\u003CSystem.Byte\u003E",
+          "Offset": 136
+        },
+        {
+          "Name": "_hotbarShareStateBitmask2",
+          "Type": "FFXIVClientStructs.Interop.Generated.FixedSizeArray4\u00601\u003CSystem.Byte\u003E",
+          "Offset": 140
+        },
+        {
+          "Name": "ClearCallbackPtr",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule/ClearCallback*",
+          "Offset": 152
+        },
+        {
+          "Name": "_hotbars",
+          "Type": "FFXIVClientStructs.Interop.Generated.FixedSizeArray18\u00601\u003CFFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule/Hotbar\u003E",
+          "Offset": 160
+        },
+        {
+          "Name": "PetHotbar",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule/Hotbar",
+          "Offset": 66976
+        },
+        {
+          "Name": "PetCrossHotbar",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule/Hotbar",
+          "Offset": 70688
+        },
+        {
+          "Name": "ScratchSlot",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule/HotbarSlot",
+          "Offset": 74400
+        },
+        {
+          "Name": "PetHotbarMode",
+          "Type": "System.UInt32",
+          "Offset": 74632
+        },
+        {
+          "Name": "_savedHotbars",
+          "Type": "FFXIVClientStructs.Interop.Generated.FixedSizeArray70\u00601\u003CFFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule/SavedHotbarGroup\u003E",
+          "Offset": 74636
+        },
+        {
+          "Name": "CrossHotbarFlags",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.CrossHotbarFlags",
+          "Offset": 175436
+        },
+        {
+          "Name": "GrandCompanyId",
+          "Type": "System.UInt32",
+          "Offset": 175440
+        },
+        {
+          "Name": "PvPHotbarsActive",
+          "Type": "System.Boolean",
+          "Offset": 175444
+        },
+        {
+          "Name": "ShowPvPHotbarSwapNotification",
+          "Type": "System.Boolean",
+          "Offset": 175445
+        },
+        {
+          "Name": "_dutyActionSlots",
+          "Type": "FFXIVClientStructs.Interop.Generated.FixedSizeArray2\u00601\u003CFFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule/DutyActionSlot\u003E",
+          "Offset": 175448
+        },
+        {
+          "Name": "DutyActionsPresent",
+          "Type": "System.Boolean",
+          "Offset": 175928
+        },
+        {
+          "Name": "_phantomActionSlots",
+          "Type": "FFXIVClientStructs.Interop.Generated.FixedSizeArray5\u00601\u003CFFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule/DutyActionSlot\u003E",
+          "Offset": 175936
+        },
+        {
+          "Name": "PhantomActionsPresent",
+          "Type": "System.Boolean",
+          "Offset": 177136
+        },
+        {
+          "Name": "UserFileEvent",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.UserFileManager/UserFileEvent",
+          "Offset": 0
+        },
+        {
+          "Name": "CharacterContentId",
+          "Type": "System.UInt64",
+          "Offset": 8
+        },
+        {
+          "Name": "UserFileManager",
+          "Type": "System.IntPtr",
+          "Offset": 16
+        },
+        {
+          "Name": "TempDataPtr",
+          "Type": "System.IntPtr",
+          "Offset": 24
+        },
+        {
+          "Name": "TempDataBytesWritten",
+          "Type": "System.UInt32",
+          "Offset": 32
+        },
+        {
+          "Name": "HasChanges",
+          "Type": "System.Boolean",
+          "Offset": 68
+        },
+        {
+          "Name": "IsSavePending",
+          "Type": "System.Boolean",
+          "Offset": 69
+        },
+        {
+          "Name": "IsVirtual",
+          "Type": "System.Boolean",
+          "Offset": 70
+        },
+        {
+          "Name": "InputCodeModifiedInterface",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.Input.InputData/InputCodeModifiedInterface",
+          "Offset": 72
+        },
+        {
+          "Name": "VirtualTable",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule/RaptureHotbarModuleVirtualTable*",
+          "Offset": 0
+        }
+      ],
+      "UsedMethods": [
+        {
+          "Method": "FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule* FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule::Instance()",
+          "ExistsBefore": true,
+          "SameIL": true,
+          "SameAttributes": true,
+          "NewILHash": "433324AFF91AB0C629F836B4DCB9E5D26627A300897FF971FA36C153231E928E"
+        },
+        {
+          "Method": "FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule/HotbarSlot* FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule::GetSlotById(System.UInt32,System.UInt32)",
+          "ExistsBefore": true,
+          "SameIL": true,
+          "SameAttributes": true,
+          "NewILHash": "4E263AE550905D844B7EA33B6D14F2CE3805D39496AF25954740F61DBEC42494"
+        },
+        {
+          "Method": "System.Void FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule::SetAndSaveSlot(System.UInt32,System.UInt32,FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule/HotbarSlotType,System.UInt32,System.Boolean,System.Boolean)",
+          "ExistsBefore": true,
+          "SameIL": true,
+          "SameAttributes": true,
+          "NewILHash": "F38416DE1888D3DA9F146D741D4427538474DD0AFB71F07F8E4304450C609E0B"
+        },
+        {
+          "Method": "System.Void FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule::LoadSavedHotbar(System.UInt32,System.UInt32)",
+          "ExistsBefore": true,
+          "SameIL": true,
+          "SameAttributes": true,
+          "NewILHash": "3B30CB3C3B13B31CD4B846DE1CC9B892A694FB44DC7C10B615393FF7CC2B4897"
+        },
+        {
+          "Method": "System.Span\u00601\u003CSystem.Byte\u003E FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule::get_HotbarShareStateBitmask()",
+          "ExistsBefore": true,
+          "SameIL": true,
+          "SameAttributes": true,
+          "NewILHash": "B59C240DAB50BB0D2113D89A9801DE5CF1621A02752D476E1376432D93833E0F"
+        },
+        {
+          "Method": "System.Span\u00601\u003CFFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule/Hotbar\u003E FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule::get_Hotbars()",
+          "ExistsBefore": true,
+          "SameIL": true,
+          "SameAttributes": true,
+          "NewILHash": "F7AC8E9931E87DCEA9E28606AB1D66930C222B98606C41B13DF8912D91823478"
+        },
+        {
+          "Method": "System.Span\u00601\u003CFFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule/SavedHotbarGroup\u003E FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule::get_SavedHotbars()",
+          "ExistsBefore": true,
+          "SameIL": true,
+          "SameAttributes": true,
+          "NewILHash": "99F5C4DBDB80B06563584E3A58F4475F5F0C39F73395D561EE6F940A94A58D10"
+        },
+        {
+          "Method": "System.Void FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule::SaveFile(System.Boolean)",
+          "ExistsBefore": true,
+          "SameIL": true,
+          "SameAttributes": true,
+          "NewILHash": "01C2F279FA8F599BB105902B79A1BB6ACB4E72D8679277E11DA371EC83F37D5C"
+        }
+      ]
+    },
+    {
+      "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule/Hotbar",
+      "OldSize": 3712,
+      "NewSize": 3712,
+      "OldPack": 0,
+      "NewPack": 0,
+      "SameLayout": true,
+      "SameFields": true,
+      "RemovedFields": [],
+      "AddedFields": [],
+      "Fields": [
+        {
+          "Name": "_slots",
+          "Type": "FFXIVClientStructs.Interop.Generated.FixedSizeArray16\u00601\u003CFFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule/HotbarSlot\u003E",
+          "Offset": 0
+        }
+      ],
+      "UsedMethods": [
+        {
+          "Method": "System.Span\u00601\u003CFFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule/HotbarSlot\u003E FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule/Hotbar::get_Slots()",
+          "ExistsBefore": true,
+          "SameIL": true,
+          "SameAttributes": true,
+          "NewILHash": "81AEF846587F8C795ACBA43BDEDDEF4B61EEB5C04C1BE7B29B2DE7C09A5D3899"
+        }
+      ]
+    },
+    {
+      "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule/HotbarSlot",
+      "OldSize": 232,
+      "NewSize": 232,
+      "OldPack": 0,
+      "NewPack": 0,
+      "SameLayout": true,
+      "SameFields": true,
+      "RemovedFields": [],
+      "AddedFields": [],
+      "Fields": [
+        {
+          "Name": "PopUpHelp",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.String.Utf8String",
+          "Offset": 0
+        },
+        {
+          "Name": "_costText",
+          "Type": "FFXIVClientStructs.Interop.Generated.FixedSizeArray32\u00601\u003CSystem.Byte\u003E",
+          "Offset": 104
+        },
+        {
+          "Name": "_popUpKeybindHint",
+          "Type": "FFXIVClientStructs.Interop.Generated.FixedSizeArray32\u00601\u003CSystem.Byte\u003E",
+          "Offset": 136
+        },
+        {
+          "Name": "_keybindHint",
+          "Type": "FFXIVClientStructs.Interop.Generated.FixedSizeArray16\u00601\u003CSystem.Byte\u003E",
+          "Offset": 168
+        },
+        {
+          "Name": "CommandId",
+          "Type": "System.UInt32",
+          "Offset": 184
+        },
+        {
+          "Name": "OriginalApparentActionId",
+          "Type": "System.UInt32",
+          "Offset": 188
+        },
+        {
+          "Name": "ApparentActionId",
+          "Type": "System.UInt32",
+          "Offset": 192
+        },
+        {
+          "Name": "ApparentActionModeParam",
+          "Type": "System.UInt16",
+          "Offset": 196
+        },
+        {
+          "Name": "CommandType",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule/HotbarSlotType",
+          "Offset": 199
+        },
+        {
+          "Name": "OriginalApparentSlotType",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule/HotbarSlotType",
+          "Offset": 200
+        },
+        {
+          "Name": "ApparentSlotType",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule/HotbarSlotType",
+          "Offset": 201
+        },
+        {
+          "Name": "UsesGeneralDragDropType",
+          "Type": "System.Boolean",
+          "Offset": 202
+        },
+        {
+          "Name": "CostType",
+          "Type": "System.Byte",
+          "Offset": 203
+        },
+        {
+          "Name": "CostDisplayMode",
+          "Type": "System.Byte",
+          "Offset": 204
+        },
+        {
+          "Name": "IconId",
+          "Type": "System.UInt32",
+          "Offset": 208
+        },
+        {
+          "Name": "CostValue",
+          "Type": "System.UInt32",
+          "Offset": 212
+        },
+        {
+          "Name": "RecipeItemId",
+          "Type": "System.UInt32",
+          "Offset": 216
+        },
+        {
+          "Name": "RecipeCraftType",
+          "Type": "System.UInt32",
+          "Offset": 220
+        },
+        {
+          "Name": "RecipeValid",
+          "Type": "System.Byte",
+          "Offset": 224
+        },
+        {
+          "Name": "RecipeDataLoaded",
+          "Type": "System.Boolean",
+          "Offset": 225
+        },
+        {
+          "Name": "ApparentActionMode",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.HotbarSlotApparentActionMode",
+          "Offset": 226
+        },
+        {
+          "Name": "IsLoaded",
+          "Type": "System.Boolean",
+          "Offset": 227
+        }
+      ],
+      "UsedMethods": []
+    },
+    {
+      "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule/HotbarSlotType",
+      "OldSize": -1,
+      "NewSize": -1,
+      "OldPack": -1,
+      "NewPack": -1,
+      "SameLayout": true,
+      "SameFields": true,
+      "RemovedFields": [],
+      "AddedFields": [],
+      "Fields": [
+        {
+          "Name": "value__",
+          "Type": "System.Byte",
+          "Offset": -1
+        }
+      ],
+      "UsedMethods": []
+    },
+    {
+      "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule/SavedHotbar",
+      "OldSize": 80,
+      "NewSize": 80,
+      "OldPack": 0,
+      "NewPack": 0,
+      "SameLayout": true,
+      "SameFields": true,
+      "RemovedFields": [],
+      "AddedFields": [],
+      "Fields": [
+        {
+          "Name": "_slots",
+          "Type": "FFXIVClientStructs.Interop.Generated.FixedSizeArray16\u00601\u003CFFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule/SavedHotbarSlot\u003E",
+          "Offset": 0
+        }
+      ],
+      "UsedMethods": [
+        {
+          "Method": "System.Span\u00601\u003CFFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule/SavedHotbarSlot\u003E FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule/SavedHotbar::get_Slots()",
+          "ExistsBefore": true,
+          "SameIL": true,
+          "SameAttributes": true,
+          "NewILHash": "80CDCD2B5BC371B98997A9A47E789C597BD6BB57A500509AAF7CD08A9BC3883B"
+        }
+      ]
+    },
+    {
+      "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule/SavedHotbarGroup",
+      "OldSize": 1440,
+      "NewSize": 1440,
+      "OldPack": 0,
+      "NewPack": 0,
+      "SameLayout": true,
+      "SameFields": true,
+      "RemovedFields": [],
+      "AddedFields": [],
+      "Fields": [
+        {
+          "Name": "_hotbars",
+          "Type": "FFXIVClientStructs.Interop.Generated.FixedSizeArray18\u00601\u003CFFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule/SavedHotbar\u003E",
+          "Offset": 0
+        }
+      ],
+      "UsedMethods": [
+        {
+          "Method": "System.Span\u00601\u003CFFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule/SavedHotbar\u003E FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule/SavedHotbarGroup::get_Hotbars()",
+          "ExistsBefore": true,
+          "SameIL": true,
+          "SameAttributes": true,
+          "NewILHash": "5FFC0353E64066B8363CA46C7D88B59A362952FC1A53D4706B03E26F53C8115D"
+        }
+      ]
+    },
+    {
+      "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule/SavedHotbarSlot",
+      "OldSize": 5,
+      "NewSize": 5,
+      "OldPack": 0,
+      "NewPack": 0,
+      "SameLayout": true,
+      "SameFields": true,
+      "RemovedFields": [],
+      "AddedFields": [],
+      "Fields": [
+        {
+          "Name": "CommandType",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule/HotbarSlotType",
+          "Offset": 0
+        },
+        {
+          "Name": "CommandId",
+          "Type": "System.UInt32",
+          "Offset": 1
+        }
+      ],
+      "UsedMethods": []
+    },
+    {
+      "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.UserFileManager/UserFileEvent",
+      "OldSize": 72,
+      "NewSize": 72,
+      "OldPack": 0,
+      "NewPack": 0,
+      "SameLayout": true,
+      "SameFields": true,
+      "RemovedFields": [],
+      "AddedFields": [],
+      "Fields": [
+        {
+          "Name": "CharacterContentId",
+          "Type": "System.UInt64",
+          "Offset": 8
+        },
+        {
+          "Name": "UserFileManager",
+          "Type": "System.IntPtr",
+          "Offset": 16
+        },
+        {
+          "Name": "TempDataPtr",
+          "Type": "System.IntPtr",
+          "Offset": 24
+        },
+        {
+          "Name": "TempDataBytesWritten",
+          "Type": "System.UInt32",
+          "Offset": 32
+        },
+        {
+          "Name": "_fileName",
+          "Type": "FFXIVClientStructs.Interop.Generated.FixedSizeArray12\u00601\u003CSystem.Byte\u003E",
+          "Offset": 48
+        },
+        {
+          "Name": "Unk3C",
+          "Type": "System.Boolean",
+          "Offset": 60
+        },
+        {
+          "Name": "Unk40",
+          "Type": "System.Int32",
+          "Offset": 64
+        },
+        {
+          "Name": "HasChanges",
+          "Type": "System.Boolean",
+          "Offset": 68
+        },
+        {
+          "Name": "IsSavePending",
+          "Type": "System.Boolean",
+          "Offset": 69
+        },
+        {
+          "Name": "IsVirtual",
+          "Type": "System.Boolean",
+          "Offset": 70
+        },
+        {
+          "Name": "VirtualTable",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.UserFileManager/UserFileEvent/UserFileEventVirtualTable*",
+          "Offset": 0
+        }
+      ],
+      "UsedMethods": [
+        {
+          "Method": "System.Void FFXIVClientStructs.FFXIV.Client.UI.Misc.UserFileManager/UserFileEvent::SaveFile(System.Boolean)",
+          "ExistsBefore": true,
+          "SameIL": true,
+          "SameAttributes": true,
+          "NewILHash": "3EE852A78C70F9CFB93340515E358B61ADB8021C7EE46A22CAE8D54692B2B12C"
+        }
+      ]
+    },
+    {
+      "Type": "FFXIVClientStructs.FFXIV.Client.UI.UIInputData",
+      "OldSize": 2608,
+      "NewSize": 2608,
+      "OldPack": 0,
+      "NewPack": 0,
+      "SameLayout": true,
+      "SameFields": true,
+      "RemovedFields": [],
+      "AddedFields": [],
+      "Fields": [
+        {
+          "Name": "InputData",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.Input.InputData",
+          "Offset": 0
+        },
+        {
+          "Name": "GamepadInputs",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.Input.GamepadInputData",
+          "Offset": 8
+        },
+        {
+          "Name": "GamepadInputs2",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.Input.GamepadInputData",
+          "Offset": 596
+        },
+        {
+          "Name": "UIFilteredCursorInputs",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.Input.CursorInputData",
+          "Offset": 1184
+        },
+        {
+          "Name": "CursorInputs",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.Input.CursorInputData",
+          "Offset": 1232
+        },
+        {
+          "Name": "KeyboardInputs",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.Input.KeyboardInputData",
+          "Offset": 1280
+        },
+        {
+          "Name": "CurrentGamepadModifier",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.Input.GamepadModifierFlag",
+          "Offset": 2452
+        },
+        {
+          "Name": "CurrentKeyModifier",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.Input.KeyModifierFlag",
+          "Offset": 2453
+        },
+        {
+          "Name": "CurrentMouseDragButtons",
+          "Type": "System.Byte",
+          "Offset": 2476
+        },
+        {
+          "Name": "GamepadInputs2ButtonsChanged",
+          "Type": "System.Boolean",
+          "Offset": 2478
+        },
+        {
+          "Name": "CursorPositionsChanged",
+          "Type": "System.Boolean",
+          "Offset": 2479
+        },
+        {
+          "Name": "KeyboardInputsChanged",
+          "Type": "System.Boolean",
+          "Offset": 2480
+        },
+        {
+          "Name": "UIFilteredCursorInputsButtonsChanged",
+          "Type": "System.Boolean",
+          "Offset": 2481
+        },
+        {
+          "Name": "GamepadInputsButtonsChanged",
+          "Type": "System.Boolean",
+          "Offset": 2482
+        },
+        {
+          "Name": "CurrentGamepadInputsFilter",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.Input.GamepadInputsFilter",
+          "Offset": 2483
+        },
+        {
+          "Name": "NumKeybinds",
+          "Type": "System.Int32",
+          "Offset": 2484
+        },
+        {
+          "Name": "Keybinds",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.Input.Keybind*",
+          "Offset": 2488
+        },
+        {
+          "Name": "InputCodeModifiedCallback",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.Input.InputData/InputCodeModifiedInterface*",
+          "Offset": 2504
+        },
+        {
+          "Name": "UserFileEvent",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.UserFileManager/UserFileEvent",
+          "Offset": 2512
+        },
+        {
+          "Name": "CharacterContentId",
+          "Type": "System.UInt64",
+          "Offset": 2520
+        },
+        {
+          "Name": "UserFileManager",
+          "Type": "System.IntPtr",
+          "Offset": 2528
+        },
+        {
+          "Name": "TempDataPtr",
+          "Type": "System.IntPtr",
+          "Offset": 2536
+        },
+        {
+          "Name": "TempDataBytesWritten",
+          "Type": "System.UInt32",
+          "Offset": 2544
+        },
+        {
+          "Name": "HasChanges",
+          "Type": "System.Boolean",
+          "Offset": 2580
+        },
+        {
+          "Name": "IsSavePending",
+          "Type": "System.Boolean",
+          "Offset": 2581
+        },
+        {
+          "Name": "IsVirtual",
+          "Type": "System.Boolean",
+          "Offset": 2582
+        },
+        {
+          "Name": "VirtualTable",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.UIInputData/UIInputDataVirtualTable*",
+          "Offset": 0
+        }
+      ],
+      "UsedMethods": [
+        {
+          "Method": "FFXIVClientStructs.FFXIV.Client.UI.UIInputData* FFXIVClientStructs.FFXIV.Client.UI.UIInputData::Instance()",
+          "ExistsBefore": true,
+          "SameIL": true,
+          "SameAttributes": true,
+          "NewILHash": "4F4D645E6028E53C00D12CD3D7AA56911D4A830EA3AAC6F51448E12FAB11727F"
+        },
+        {
+          "Method": "FFXIVClientStructs.FFXIV.Client.System.Input.Keybind* FFXIVClientStructs.FFXIV.Client.UI.UIInputData::GetKeybind(FFXIVClientStructs.FFXIV.Client.System.Input.InputId)",
+          "ExistsBefore": true,
+          "SameIL": true,
+          "SameAttributes": true,
+          "NewILHash": "4B664F8D2E53A2F531EA5E516A73E0CDE457D0FEC250B8D5950ADA5444B95DC0"
+        },
+        {
+          "Method": "System.Void FFXIVClientStructs.FFXIV.Client.UI.UIInputData::SetKeybind(FFXIVClientStructs.FFXIV.Client.System.Input.InputId,FFXIVClientStructs.FFXIV.Client.System.Input.Keybind*)",
+          "ExistsBefore": true,
+          "SameIL": true,
+          "SameAttributes": true,
+          "NewILHash": "3BE8482CD20A6C35CFBE95E82B89519BB93B961E22B726AB683D490226A1AE61"
+        },
+        {
+          "Method": "System.Void FFXIVClientStructs.FFXIV.Client.UI.UIInputData::SaveFile(System.Boolean)",
+          "ExistsBefore": true,
+          "SameIL": true,
+          "SameAttributes": true,
+          "NewILHash": "B524181217209FD3298AB847708A87CE302D0FDCEECECD8D9BFA42B65486F68F"
+        },
+        {
+          "Method": "System.Span\u00601\u003CFFXIVClientStructs.FFXIV.Client.System.Input.Keybind\u003E FFXIVClientStructs.FFXIV.Client.UI.UIInputData::GetKeybindSpan()",
+          "ExistsBefore": true,
+          "SameIL": true,
+          "SameAttributes": true,
+          "NewILHash": "AE495DFA72119398EACD2A107204E4C929A744BB45A64EB73739BA13C92109CA"
+        },
+        {
+          "Method": "FFXIVClientStructs.FFXIV.Client.System.Input.Keybind* FFXIVClientStructs.FFXIV.Client.UI.UIInputData::GetKeybind(System.Int32)",
+          "ExistsBefore": true,
+          "SameIL": true,
+          "SameAttributes": true,
+          "NewILHash": "2F308B0D7753206D43AC9EDB283A2A271D86375469566AE3227934E52A373BF2"
+        }
+      ]
+    },
+    {
+      "Type": "FFXIVClientStructs.FFXIV.Client.UI.UIModule",
+      "OldSize": 1047456,
+      "NewSize": 1047456,
+      "OldPack": 0,
+      "NewPack": 0,
+      "SameLayout": true,
+      "SameFields": true,
+      "RemovedFields": [],
+      "AddedFields": [],
+      "Fields": [
+        {
+          "Name": "_uIModuleHandlers",
+          "Type": "FFXIVClientStructs.Interop.Generated.FixedSizeArray57\u00601\u003CFFXIVClientStructs.FFXIV.Client.UI.UIModule/UIModuleHandler\u003E",
+          "Offset": 48
+        },
+        {
+          "Name": "_atkHistory",
+          "Type": "FFXIVClientStructs.Interop.Generated.FixedSizeArray23\u00601\u003CFFXIVClientStructs.FFXIV.Client.UI.RaptureAtkHistory\u003E",
+          "Offset": 960
+        },
+        {
+          "Name": "LinkshellCycle",
+          "Type": "System.Int32",
+          "Offset": 2248
+        },
+        {
+          "Name": "CrossWorldLinkshellCycle",
+          "Type": "System.Int32",
+          "Offset": 2252
+        },
+        {
+          "Name": "ShouldExitGame",
+          "Type": "System.Boolean",
+          "Offset": 2256
+        },
+        {
+          "Name": "FrameCount",
+          "Type": "System.UInt32",
+          "Offset": 2260
+        },
+        {
+          "Name": "ExcelModuleInterface",
+          "Type": "FFXIVClientStructs.FFXIV.Component.Excel.ExcelModuleInterface*",
+          "Offset": 2264
+        },
+        {
+          "Name": "RaptureTextModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureTextModule",
+          "Offset": 2272
+        },
+        {
+          "Name": "CompletionModule",
+          "Type": "FFXIVClientStructs.FFXIV.Component.Completion.CompletionModule",
+          "Offset": 5960
+        },
+        {
+          "Name": "RaptureLogModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureLogModule",
+          "Offset": 6848
+        },
+        {
+          "Name": "UserFileManager",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.UserFileManager",
+          "Offset": 24976
+        },
+        {
+          "Name": "RaptureMacroModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureMacroModule",
+          "Offset": 25008
+        },
+        {
+          "Name": "RaptureHotbarModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule",
+          "Offset": 359520
+        },
+        {
+          "Name": "RaptureGearsetModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureGearsetModule",
+          "Offset": 536664
+        },
+        {
+          "Name": "AcquaintanceModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.AcquaintanceModule",
+          "Offset": 583584
+        },
+        {
+          "Name": "ItemOrderModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.ItemOrderModule",
+          "Offset": 588088
+        },
+        {
+          "Name": "ItemFinderModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.ItemFinderModule",
+          "Offset": 588312
+        },
+        {
+          "Name": "AddonConfig",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.AddonConfig",
+          "Offset": 594984
+        },
+        {
+          "Name": "LogFilterConfig",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.LogFilterConfig",
+          "Offset": 595096
+        },
+        {
+          "Name": "UiSavePackModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.UiSavePackModule",
+          "Offset": 596424
+        },
+        {
+          "Name": "LetterDataModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.LetterDataModule",
+          "Offset": 596512
+        },
+        {
+          "Name": "RetainerTaskDataModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.RetainerTaskDataModule",
+          "Offset": 599152
+        },
+        {
+          "Name": "FlagStatusModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.FlagStatusModule",
+          "Offset": 599336
+        },
+        {
+          "Name": "RecipeFavoriteModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.RecipeFavoriteModule",
+          "Offset": 600024
+        },
+        {
+          "Name": "CraftModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.CraftModule",
+          "Offset": 600424
+        },
+        {
+          "Name": "UiDataModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.UiDataModule",
+          "Offset": 600520
+        },
+        {
+          "Name": "DataCenterHelper",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.DataCenterHelper",
+          "Offset": 615072
+        },
+        {
+          "Name": "WorldHelper",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.WorldHelper",
+          "Offset": 615104
+        },
+        {
+          "Name": "GoldSaucerModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.GoldSaucerModule",
+          "Offset": 615184
+        },
+        {
+          "Name": "TeleportHistoryModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.TeleportHistoryModule",
+          "Offset": 615904
+        },
+        {
+          "Name": "ItemContextCustomizeModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.ItemContextCustomizeModule",
+          "Offset": 616104
+        },
+        {
+          "Name": "RecommendEquipModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.RecommendEquipModule",
+          "Offset": 616512
+        },
+        {
+          "Name": "PvpSetModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.PvpSetModule",
+          "Offset": 616640
+        },
+        {
+          "Name": "ExtraCommandHelper",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.ExtraCommandHelper",
+          "Offset": 616760
+        },
+        {
+          "Name": "JobHudManualHelper",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.JobHudManualHelper",
+          "Offset": 616776
+        },
+        {
+          "Name": "EmoteHistoryModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.EmoteHistoryModule",
+          "Offset": 616792
+        },
+        {
+          "Name": "MinionListModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.MinionListModule",
+          "Offset": 617176
+        },
+        {
+          "Name": "MountListModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.MountListModule",
+          "Offset": 617336
+        },
+        {
+          "Name": "EmjModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.EmjModule",
+          "Offset": 617496
+        },
+        {
+          "Name": "AozNoteModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.AozNoteModule",
+          "Offset": 617704
+        },
+        {
+          "Name": "CrossWorldLinkShellModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.CrossWorldLinkShellModule",
+          "Offset": 621080
+        },
+        {
+          "Name": "AchievementListModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.AchievementListModule",
+          "Offset": 622608
+        },
+        {
+          "Name": "GroupPoseModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.GroupPoseModule",
+          "Offset": 622752
+        },
+        {
+          "Name": "FieldMarkerModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.FieldMarkerModule",
+          "Offset": 623072
+        },
+        {
+          "Name": "MycNoteModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.MycNoteModule",
+          "Offset": 626288
+        },
+        {
+          "Name": "OrnamentListModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.OrnamentListModule",
+          "Offset": 626472
+        },
+        {
+          "Name": "MycItemModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.MycItemModule",
+          "Offset": 626568
+        },
+        {
+          "Name": "GroupPoseStampModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.GroupPoseStampModule",
+          "Offset": 626856
+        },
+        {
+          "Name": "InputTimerModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.InputTimerModule",
+          "Offset": 692488
+        },
+        {
+          "Name": "McAggreModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.McAggreModule",
+          "Offset": 693760
+        },
+        {
+          "Name": "RetainerCommentModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.RetainerCommentModule",
+          "Offset": 694472
+        },
+        {
+          "Name": "BannerModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.BannerModule",
+          "Offset": 695920
+        },
+        {
+          "Name": "AdventureNoteModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.AdventureNoteModule",
+          "Offset": 696000
+        },
+        {
+          "Name": "AkatsukiNoteModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.AkatsukiNoteModule",
+          "Offset": 696096
+        },
+        {
+          "Name": "VVDNotebookModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.VVDNotebookModule",
+          "Offset": 696328
+        },
+        {
+          "Name": "VVDActionModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.VVDActionModule",
+          "Offset": 696456
+        },
+        {
+          "Name": "TofuModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.TofuModule",
+          "Offset": 696536
+        },
+        {
+          "Name": "FishingModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.FishingModule",
+          "Offset": 696616
+        },
+        {
+          "Name": "ActionModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.ActionModule",
+          "Offset": 696808
+        },
+        {
+          "Name": "TermFilterModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.TermFilterModule",
+          "Offset": 696912
+        },
+        {
+          "Name": "ReadyCheckModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.ReadyCheckModule",
+          "Offset": 697312
+        },
+        {
+          "Name": "PartyRoleListModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.PartyRoleListModule",
+          "Offset": 697392
+        },
+        {
+          "Name": "CatalogSearchBookmarkModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.CatalogSearchBookmarkModule",
+          "Offset": 697560
+        },
+        {
+          "Name": "DescriptionModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.DescriptionModule",
+          "Offset": 698040
+        },
+        {
+          "Name": "MJICraftworksPresetModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.MJICraftworksPresetModule",
+          "Offset": 698128
+        },
+        {
+          "Name": "PerformanceModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.PerformanceModule",
+          "Offset": 698440
+        },
+        {
+          "Name": "MKDSupportJobModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.MKDSupportJobModule",
+          "Offset": 698520
+        },
+        {
+          "Name": "MKDLoreModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.MKDLoreModule",
+          "Offset": 698616
+        },
+        {
+          "Name": "MKDSupportJobNoteModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.MKDSupportJobNoteModule",
+          "Offset": 698712
+        },
+        {
+          "Name": "QuickPanelModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.QuickPanelModule",
+          "Offset": 698808
+        },
+        {
+          "Name": "GlassesModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.GlassesModule",
+          "Offset": 699432
+        },
+        {
+          "Name": "XBMNoteModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.XBMNoteModule",
+          "Offset": 699552
+        },
+        {
+          "Name": "XBMModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.XBMModule",
+          "Offset": 699648
+        },
+        {
+          "Name": "ConfigModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.ConfigModule",
+          "Offset": 699968
+        },
+        {
+          "Name": "RaptureShellModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Shell.RaptureShellModule",
+          "Offset": 760656
+        },
+        {
+          "Name": "PronounModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.PronounModule",
+          "Offset": 765344
+        },
+        {
+          "Name": "UI3DModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.UI3DModule",
+          "Offset": 766288
+        },
+        {
+          "Name": "RaptureAtkModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.RaptureAtkModule",
+          "Offset": 861840
+        },
+        {
+          "Name": "InfoModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Info.InfoModule",
+          "Offset": 1036304
+        },
+        {
+          "Name": "UIModuleHelpers",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.Misc.UIModuleHelpers",
+          "Offset": 1043592
+        },
+        {
+          "Name": "AddonSheetName",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.String.Utf8String",
+          "Offset": 1043672
+        },
+        {
+          "Name": "UIColorSheetName",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.String.Utf8String",
+          "Offset": 1043784
+        },
+        {
+          "Name": "CompletionSheetName",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.String.Utf8String",
+          "Offset": 1043904
+        },
+        {
+          "Name": "CompletionOpenIconMacro",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.String.Utf8String",
+          "Offset": 1044008
+        },
+        {
+          "Name": "CompletionCloseIconMacro",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.String.Utf8String",
+          "Offset": 1044112
+        },
+        {
+          "Name": "NewLineMacro",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.String.Utf8String",
+          "Offset": 1044216
+        },
+        {
+          "Name": "LastTalkName",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.String.Utf8String",
+          "Offset": 1044320
+        },
+        {
+          "Name": "LastTalkText",
+          "Type": "FFXIVClientStructs.FFXIV.Client.System.String.Utf8String",
+          "Offset": 1044424
+        },
+        {
+          "Name": "UIInputData",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.UIInputData",
+          "Offset": 1044528
+        },
+        {
+          "Name": "UIInputModule",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.UIInputModule",
+          "Offset": 1047136
+        },
+        {
+          "Name": "VirtualTable",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.UIModule/UIModuleVirtualTable*",
+          "Offset": 0
+        },
+        {
+          "Name": "UIModuleInterface",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.UIModuleInterface",
+          "Offset": 0
+        },
+        {
+          "Name": "AtkModuleEvent",
+          "Type": "FFXIVClientStructs.FFXIV.Component.GUI.AtkModuleEvent",
+          "Offset": 8
+        },
+        {
+          "Name": "ExcelLanguageEvent",
+          "Type": "FFXIVClientStructs.FFXIV.Component.Excel.ExcelLanguageEvent",
+          "Offset": 16
+        },
+        {
+          "Name": "ChangeEventInterface",
+          "Type": "FFXIVClientStructs.FFXIV.Common.Configuration.ConfigBase/ChangeEventInterface",
+          "Offset": 24
+        },
+        {
+          "Name": "NextInterface",
+          "Type": "FFXIVClientStructs.FFXIV.Common.Configuration.ConfigBase/ChangeEventInterface*",
+          "Offset": 32
+        },
+        {
+          "Name": "Owner",
+          "Type": "FFXIVClientStructs.FFXIV.Common.Configuration.ConfigBase*",
+          "Offset": 40
+        }
+      ],
+      "UsedMethods": [
+        {
+          "Method": "FFXIVClientStructs.FFXIV.Client.UI.UIModule* FFXIVClientStructs.FFXIV.Client.UI.UIModule::Instance()",
+          "ExistsBefore": true,
+          "SameIL": true,
+          "SameAttributes": true,
+          "NewILHash": "627947B12E5545610593466BD0EDAB669ADE6D41AC34434867FEF6343541A83F"
+        },
+        {
+          "Method": "FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule* FFXIVClientStructs.FFXIV.Client.UI.UIModule::GetRaptureHotbarModule()",
+          "ExistsBefore": true,
+          "SameIL": true,
+          "SameAttributes": true,
+          "NewILHash": "5807E27064056B79C8D9FE9E3B7483C046BAC9DE67D895DCABCC2E6FAF5DD460"
+        },
+        {
+          "Method": "FFXIVClientStructs.FFXIV.Client.UI.Misc.AddonConfig* FFXIVClientStructs.FFXIV.Client.UI.UIModule::GetAddonConfig()",
+          "ExistsBefore": true,
+          "SameIL": true,
+          "SameAttributes": true,
+          "NewILHash": "2C32F91BF4EADEB8682B70F73C8D477C3701C103589A74504EC8E9A8D6BD2055"
+        },
+        {
+          "Method": "FFXIVClientStructs.FFXIV.Client.UI.UIInputData* FFXIVClientStructs.FFXIV.Client.UI.UIModule::GetUIInputData()",
+          "ExistsBefore": true,
+          "SameIL": true,
+          "SameAttributes": true,
+          "NewILHash": "94296C39C80C2A522F9EBF9CCB1984E7D72A2F96281D431F5EA338319EDD655F"
+        }
+      ]
+    },
+    {
+      "Type": "FFXIVClientStructs.FFXIV.Client.UI.UIModuleInterface",
+      "OldSize": 8,
+      "NewSize": 8,
+      "OldPack": 0,
+      "NewPack": 0,
+      "SameLayout": true,
+      "SameFields": true,
+      "RemovedFields": [],
+      "AddedFields": [],
+      "Fields": [
+        {
+          "Name": "VirtualTable",
+          "Type": "FFXIVClientStructs.FFXIV.Client.UI.UIModuleInterface/UIModuleInterfaceVirtualTable*",
+          "Offset": 0
+        }
+      ],
+      "UsedMethods": [
+        {
+          "Method": "FFXIVClientStructs.FFXIV.Client.UI.Misc.RaptureHotbarModule* FFXIVClientStructs.FFXIV.Client.UI.UIModuleInterface::GetRaptureHotbarModule()",
+          "ExistsBefore": true,
+          "SameIL": true,
+          "SameAttributes": true,
+          "NewILHash": "485A5CE365676BB9F54954034983A9529859FEBA42B5541BFECFC406D97A2318"
+        },
+        {
+          "Method": "FFXIVClientStructs.FFXIV.Client.UI.Misc.AddonConfig* FFXIVClientStructs.FFXIV.Client.UI.UIModuleInterface::GetAddonConfig()",
+          "ExistsBefore": true,
+          "SameIL": true,
+          "SameAttributes": true,
+          "NewILHash": "23847D9CF039B115371E1FCE6C81358243BA5E390FD1D4A8529529645BAA7E51"
+        },
+        {
+          "Method": "FFXIVClientStructs.FFXIV.Client.UI.UIInputData* FFXIVClientStructs.FFXIV.Client.UI.UIModuleInterface::GetUIInputData()",
+          "ExistsBefore": true,
+          "SameIL": true,
+          "SameAttributes": true,
+          "NewILHash": "972DEA793D7E9AB8F0EC083A48F0E5B7C713EEC105E55F8F4A4C9187AF9B7569"
+        }
+      ]
+    },
+    {
+      "Type": "FFXIVClientStructs.FFXIV.Component.GUI.AtkUnitBase",
+      "OldSize": 568,
+      "NewSize": 568,
+      "OldPack": 0,
+      "NewPack": 0,
+      "SameLayout": true,
+      "SameFields": true,
+      "RemovedFields": [],
+      "AddedFields": [],
+      "Fields": [
+        {
+          "Name": "_name",
+          "Type": "FFXIVClientStructs.Interop.Generated.FixedSizeArray32\u00601\u003CSystem.Byte\u003E",
+          "Offset": 8
+        },
+        {
+          "Name": "UldManager",
+          "Type": "FFXIVClientStructs.FFXIV.Component.GUI.AtkUldManager",
+          "Offset": 40
+        },
+        {
+          "Name": "WidgetAlignment",
+          "Type": "FFXIVClientStructs.FFXIV.Component.GUI.AtkWidgetAlignment",
+          "Offset": 184
+        },
+        {
+          "Name": "RootNode",
+          "Type": "FFXIVClientStructs.FFXIV.Component.GUI.AtkResNode*",
+          "Offset": 200
+        },
+        {
+          "Name": "WindowCollisionNode",
+          "Type": "FFXIVClientStructs.FFXIV.Component.GUI.AtkCollisionNode*",
+          "Offset": 208
+        },
+        {
+          "Name": "WindowHeaderCollisionNode",
+          "Type": "FFXIVClientStructs.FFXIV.Component.GUI.AtkCollisionNode*",
+          "Offset": 216
+        },
+        {
+          "Name": "_additionalMoveableNodes",
+          "Type": "FFXIVClientStructs.Interop.Generated.FixedSizeArray2\u00601\u003CFFXIVClientStructs.Interop.Pointer\u00601\u003CFFXIVClientStructs.FFXIV.Component.GUI.AtkResNode\u003E\u003E",
+          "Offset": 224
+        },
+        {
+          "Name": "CursorTarget",
+          "Type": "FFXIVClientStructs.FFXIV.Component.GUI.AtkResNode*",
+          "Offset": 240
+        },
+        {
+          "Name": "FocusNode",
+          "Type": "FFXIVClientStructs.FFXIV.Component.GUI.AtkResNode*",
+          "Offset": 248
+        },
+        {
+          "Name": "ComponentFocusNode",
+          "Type": "FFXIVClientStructs.FFXIV.Component.GUI.AtkResNode*",
+          "Offset": 256
+        },
+        {
+          "Name": "_additionalFocusableNodes",
+          "Type": "FFXIVClientStructs.Interop.Generated.FixedSizeArray2\u00601\u003CFFXIVClientStructs.Interop.Pointer\u00601\u003CFFXIVClientStructs.FFXIV.Component.GUI.AtkResNode\u003E\u003E",
+          "Offset": 264
+        },
+        {
+          "Name": "CurrentDropDownOwnerNode",
+          "Type": "FFXIVClientStructs.FFXIV.Component.GUI.AtkComponentNode*",
+          "Offset": 280
+        },
+        {
+          "Name": "WindowNode",
+          "Type": "FFXIVClientStructs.FFXIV.Component.GUI.AtkComponentNode*",
+          "Offset": 288
+        },
+        {
+          "Name": "RootNodeTween",
+          "Type": "FFXIVClientStructs.FFXIV.Component.GUI.AtkSimpleTween",
+          "Offset": 296
+        },
+        {
+          "Name": "AtkValues",
+          "Type": "FFXIVClientStructs.FFXIV.Component.GUI.AtkValue*",
+          "Offset": 376
+        },
+        {
+          "Name": "CachedAtkValueStrings",
+          "Type": "FFXIVClientStructs.STD.StdVector\u00601\u003CInteropGenerator.Runtime.CStringPointer\u003E",
+          "Offset": 384
+        },
+        {
+          "Name": "Flags198",
+          "Type": "System.UInt32",
+          "Offset": 408
+        },
+        {
+          "Name": "Flags1A0",
+          "Type": "System.Byte",
+          "Offset": 416
+        },
+        {
+          "Name": "Flags1A1",
+          "Type": "System.Byte",
+          "Offset": 417
+        },
+        {
+          "Name": "Flags1A2",
+          "Type": "System.Byte",
+          "Offset": 418
+        },
+        {
+          "Name": "Flags1A3",
+          "Type": "System.Byte",
+          "Offset": 419
+        },
+        {
+          "Name": "Flags1A4",
+          "Type": "System.Byte",
+          "Offset": 420
+        },
+        {
+          "Name": "Flags1A5",
+          "Type": "System.Byte",
+          "Offset": 421
+        },
+        {
+          "Name": "Param",
+          "Type": "System.Int32",
+          "Offset": 424
+        },
+        {
+          "Name": "ShowTransitionDuration",
+          "Type": "System.UInt32",
+          "Offset": 428
+        },
+        {
+          "Name": "HideTransitionDuration",
+          "Type": "System.UInt32",
+          "Offset": 432
+        },
+        {
+          "Name": "Flags1B4",
+          "Type": "System.UInt32",
+          "Offset": 436
+        },
+        {
+          "Name": "AddonParamUnknown1",
+          "Type": "System.Byte",
+          "Offset": 440
+        },
+        {
+          "Name": "NumBlockingAddons",
+          "Type": "System.Byte",
+          "Offset": 441
+        },
+        {
+          "Name": "UiFlagsHideCount",
+          "Type": "System.Byte",
+          "Offset": 442
+        },
+        {
+          "Name": "Unk1BB",
+          "Type": "System.Byte",
+          "Offset": 443
+        },
+        {
+          "Name": "ShowTransitionScale",
+          "Type": "System.Single",
+          "Offset": 444
+        },
+        {
+          "Name": "HideTransitionScale",
+          "Type": "System.Single",
+          "Offset": 448
+        },
+        {
+          "Name": "Scale",
+          "Type": "System.Single",
+          "Offset": 452
+        },
+        {
+          "Name": "Flags1C8",
+          "Type": "System.UInt32",
+          "Offset": 456
+        },
+        {
+          "Name": "ScdResourceIndex",
+          "Type": "System.Byte",
+          "Offset": 460
+        },
+        {
+          "Name": "HUDScaleTableIndex",
+          "Type": "System.Byte",
+          "Offset": 461
+        },
+        {
+          "Name": "VisibilityFlags",
+          "Type": "System.UInt16",
+          "Offset": 462
+        },
+        {
+          "Name": "DrawOrderIndex",
+          "Type": "System.UInt16",
+          "Offset": 464
+        },
+        {
+          "Name": "HudAnchoringInfoIndex",
+          "Type": "System.SByte",
+          "Offset": 466
+        },
+        {
+          "Name": "X",
+          "Type": "System.Int16",
+          "Offset": 468
+        },
+        {
+          "Name": "Y",
+          "Type": "System.Int16",
+          "Offset": 470
+        },
+        {
+          "Name": "ShowTransitionOffsetX",
+          "Type": "System.Int16",
+          "Offset": 472
+        },
+        {
+          "Name": "ShowTransitionOffsetY",
+          "Type": "System.Int16",
+          "Offset": 474
+        },
+        {
+          "Name": "HideTransitionOffsetX",
+          "Type": "System.Int16",
+          "Offset": 476
+        },
+        {
+          "Name": "HideTransitionOffsetY",
+          "Type": "System.Int16",
+          "Offset": 478
+        },
+        {
+          "Name": "ShowSoundEffectId",
+          "Type": "System.Int16",
+          "Offset": 480
+        },
+        {
+          "Name": "AtkValuesCount",
+          "Type": "System.UInt16",
+          "Offset": 482
+        },
+        {
+          "Name": "Id",
+          "Type": "System.UInt16",
+          "Offset": 484
+        },
+        {
+          "Name": "ParentId",
+          "Type": "System.UInt16",
+          "Offset": 486
+        },
+        {
+          "Name": "HostId",
+          "Type": "System.UInt16",
+          "Offset": 488
+        },
+        {
+          "Name": "BlockedParentId",
+          "Type": "System.UInt16",
+          "Offset": 490
+        },
+        {
+          "Name": "CursorNavigationOwnIndex",
+          "Type": "System.Byte",
+          "Offset": 492
+        },
+        {
+          "Name": "Alpha",
+          "Type": "System.Byte",
+          "Offset": 493
+        },
+        {
+          "Name": "ShowHideFlags",
+          "Type": "System.Byte",
+          "Offset": 494
+        },
+        {
+          "Name": "Unk1EF",
+          "Type": "System.Boolean",
+          "Offset": 495
+        },
+        {
+          "Name": "CollisionNodeList",
+          "Type": "FFXIVClientStructs.FFXIV.Component.GUI.AtkResNode**",
+          "Offset": 496
+        },
+        {
+          "Name": "CollisionNodeListCount",
+          "Type": "System.UInt32",
+          "Offset": 504
+        },
+        {
+          "Name": "_operationGuides",
+          "Type": "FFXIVClientStructs.Interop.Generated.FixedSizeArray5\u00601\u003CFFXIVClientStructs.FFXIV.Component.GUI.OperationGuide\u003E",
+          "Offset": 508
+        },
+        {
+          "Name": "VirtualTable",
+          "Type": "FFXIVClientStructs.FFXIV.Component.GUI.AtkUnitBase/AtkUnitBaseVirtualTable*",
+          "Offset": 0
+        },
+        {
+          "Name": "AtkEventListener",
+          "Type": "FFXIVClientStructs.FFXIV.Component.GUI.AtkEventListener",
+          "Offset": 0
+        }
+      ],
+      "UsedMethods": [
+        {
+          "Method": "System.Single FFXIVClientStructs.FFXIV.Component.GUI.AtkUnitBase::GetGlobalUIScale()",
+          "ExistsBefore": true,
+          "SameIL": true,
+          "SameAttributes": true,
+          "NewILHash": "E5E64B1C079CAA0623235E05D7CDB24701917AFA31D5B9A5C3E62CB60C23F754"
+        },
+        {
+          "Method": "System.Boolean FFXIVClientStructs.FFXIV.Component.GUI.AtkUnitBase::get_IsScalingWithGlobalUIScale()",
+          "ExistsBefore": true,
+          "SameIL": true,
+          "SameAttributes": true,
+          "NewILHash": "C8F7B6FCC7B3F51D68365FEE6A5EF28F9370EFA528204BEB2EB52CDEFCB9B5CE"
+        }
+      ]
+    }
+  ]
+}

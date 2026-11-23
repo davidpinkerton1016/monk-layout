@@ -168,4 +168,102 @@ Reject(() => whmBackup.CheckIdentity(characterB, whm), "White Mage backups must 
 Reject(() => whmBackup.CheckIdentity(0, whm), "White Mage backups must reject an unknown character.");
 whmBackup.TargetLayout = 3;
 Reject(() => whmBackup.CheckIdentity(characterA, whm), "White Mage restore must reject a backup for Monk's HUD slot.");
-Console.WriteLine($"PASS: {checks} Monk and White Mage layout, keyboard, restore, backup compatibility and character detection checks.");
+
+var wrath = JobPreset.WhiteMageWrath;
+var wrathActions = wrath.Actions.Where(a => a.Action != null).ToArray();
+var wrathBound = wrathActions.Where(a => a.Bind).ToArray();
+Check(wrath.UsesWrath && !whm.UsesWrath && !JobPreset.Monk.UsesWrath,
+    "Wrath controls must only appear for the selected Wrath profile.");
+Check(wrath.Name == whm.Name && wrath.ProfileName != whm.ProfileName,
+    "Profiles must have distinct display names while retaining the actual White Mage job name.");
+Check(wrath.Actions.Length == 36 && wrathActions.Length == 35,
+    "The Wrath profile must retain the existing 3 by 12 footprint and all 35 White Mage actions.");
+Check(wrathActions.Select(a => a.Action!).ToHashSet().SetEquals(expectedWhm)
+    && wrathActions.Select(a => a.Action).Distinct().Count() == 35,
+    "The Wrath profile must preserve every White Mage action exactly once, including manual utilities.");
+Check(wrathBound.Length == 32 && wrathBound.Select(a => a.Shortcut).Distinct().Count() == 32,
+    "The Wrath profile must keep 32 unique keyboard shortcuts.");
+Check(wrath.Actions.Take(6).Select(a => a.Action).SequenceEqual(new[] {
+    "Stone", "Holy", "Cure", "Medica", "Afflatus Solace", "Afflatus Rapture" }),
+    "Wrath's four native replacement buttons and both lily heals must occupy the six easiest keys.");
+Check(wrath.Actions.Take(6).Select(a => a.ShortcutText).SequenceEqual(new[] { "1", "2", "3", "4", "5", "R" }),
+    "The combo buttons must be on 1-4 and lily heals on 5 and R.");
+Check(wrath.Actions.Skip(6).Take(26).Select(a => (a.Action, a.Shortcut))
+    .SequenceEqual(whm.Actions.Skip(6).Take(26).Select(a => (a.Action, a.Shortcut))),
+    "All manual shortcuts after the six primary buttons must remain in their existing positions.");
+foreach (var (action, shortcut) in new[] {
+    ("Sprint", "V"), ("Aetherial Shift", "X"), ("Surecast", "Shift+X"),
+    ("Rescue", "Ctrl+F"), ("Limit Break", "Ctrl+G"), ("Benediction", "Z"),
+    ("Swiftcast", "G"), ("Esuna", "C"), ("Raise", "Shift+C") })
+    Check(wrathActions.Single(a => a.Action == action).ShortcutText == shortcut,
+        $"Manual {action} must remain on {shortcut}.");
+Check(wrathActions.Where(a => !a.Bind).Select(a => a.Action).ToHashSet().SetEquals(new[] { "Aero", "Assize", "Repose" }),
+    "Dia, Assize and Repose must stay visible without occupying clipboard shortcuts.");
+Check(wrathActions.Where(a => !a.Bind).All(a => a.Shortcut == default && a.ShortcutText == "Click"),
+    "Click-only Wrath backup actions must not acquire synthetic shortcuts.");
+Check(wrathActions.Where(a => a.General).Select(a => a.Action).ToHashSet().SetEquals(new[] { "Sprint", "Limit Break" }),
+    "Sprint and Limit Break must resolve through the game's GeneralAction table.");
+Check(!wrathBound.Any(a => a.Shortcut.Modifier == 2 && "ZXCV".Contains((char)a.Shortcut.Key)),
+    "The Wrath profile must protect the same clipboard shortcuts as the manual profiles.");
+var wrathKeys = LayoutPlan.PlanKeyChanges(original.Values, new HashSet<int> { 320 }, wrath.Actions);
+Check(wrathKeys.OrderBy(k => k.Key).SequenceEqual(whmKeys.OrderBy(k => k.Key))
+    && wrathKeys.OrderBy(k => k.Key).SequenceEqual(monkKeys.OrderBy(k => k.Key)),
+    "Selecting the Wrath profile must not change the shared global keyboard map.");
+var manualBindings = original.ToDictionary();
+foreach (var edit in whmKeys) manualBindings[edit.Key] = edit.Value;
+Check(LayoutPlan.PlanKeyChanges(manualBindings.Values, new HashSet<int> { 320 }, wrath.Actions).Count == 0,
+    "Switching from an installed manual White Mage profile to Wrath must require no keybind changes.");
+Reject(() => LayoutPlan.PlanKeyChanges(input.Values, new HashSet<int> { 320 }, wrath.Actions),
+    "Wrath must retain the protection against custom movement key conflicts.");
+Check(wrath.JobId == whm.JobId && wrath.BaseClassId == whm.BaseClassId && wrath.HudLayout == whm.HudLayout
+    && wrath.BackupFolder == whm.BackupFolder && wrath.BackupFolder == "white-mage"
+    && wrath.Gauges.SequenceEqual(whm.Gauges),
+    "Both White Mage profiles must share the same saved job, HUD 3, gauge, original backup and restore index.");
+whmRoundtrip.CheckIdentity(characterA, wrath); checks++;
+whmRoundtrip.CheckIdentity(characterA, whm); checks++;
+Reject(() => legacyBackup.CheckIdentity(characterA, wrath), "Legacy Monk backups must not restore through the Wrath profile.");
+Reject(() => whmRoundtrip.CheckIdentity(characterB, wrath), "Wrath restore must reject another character's White Mage backup.");
+whiteMage.CheckReady(true, wrath); checks++;
+Reject(() => monk.CheckReady(true, wrath), "The Wrath profile must reject Monk before editing any game state.");
+Reject(() => (whiteMage with { IsLevelSynced = true }).CheckReady(true, wrath),
+    "Wrath layout apply must retain the existing level-sync protection.");
+Check(WrathControls.Pause.Command == "/wrath auto off" && WrathControls.Resume.Command == "/wrath auto on",
+    "Pause and Resume must use deterministic commands rather than toggle the current state.");
+Check(WrathControls.OpenAutoSettings.Command == "/wrath autosettings"
+    && WrathControls.OpenWhiteMage.Command == "/wrath whm",
+    "Settings buttons must open only the requested Wrath configuration pages.");
+Check(WrathControls.Pause.Confirmation.Contains("Check Wrath's state")
+    && WrathControls.Resume.Confirmation.Contains("Check Wrath's state"),
+    "A successful command dispatch must not claim that live Wrath state was verified.");
+
+Check(NativeCompatibility.IsSupportedRuntimeHash(NativeCompatibility.CurrentStructHash),
+    "The audited current native DLL must pass the runtime gate.");
+Check(!NativeCompatibility.IsSupportedRuntimeHash(NativeCompatibility.LegacyBackupStructHash),
+    "Backup compatibility must never permit the old native DLL at runtime.");
+Check(NativeCompatibility.CurrentGameVersion == "2026.11.03.0000.0000",
+    "The runtime game version must match the audited current release.");
+foreach (var hash in new[] { NativeCompatibility.CurrentStructHash, NativeCompatibility.LegacyBackupStructHash })
+{
+    Check(NativeCompatibility.IsSupportedBackupHash(hash), "Only explicitly audited native snapshots may pass the backup hash gate.");
+    var compatibleBackup = JsonSerializer.Deserialize<Backup>(JsonSerializer.Serialize(new Backup
+    {
+        CharacterId = characterA, ClassJobId = 24, TargetLayout = 2, StructHash = hash, JobSlots = oldSlots
+    }))!;
+    compatibleBackup.CheckIdentity(characterA, whm); checks++;
+    compatibleBackup.CheckIdentity(characterA, wrath); checks++;
+    Check(compatibleBackup.StructHash == hash && compatibleBackup.JobSlots.SequenceEqual(oldSlots),
+        "Legacy-compatible and current White Mage snapshots must preserve their exact saved data.");
+    Reject(() => compatibleBackup.CheckIdentity(characterA, JobPreset.Monk),
+        "An accepted structure hash must not permit restoring White Mage data into Monk.");
+    Reject(() => compatibleBackup.CheckIdentity(characterB, wrath),
+        "An accepted structure hash must not permit restoring another character's backup.");
+    compatibleBackup.TargetLayout = 3;
+    Reject(() => compatibleBackup.CheckIdentity(characterA, wrath),
+        "An accepted structure hash must not bypass the HUD slot identity guard.");
+}
+foreach (var hash in new string?[] { null, "", new string('0', 64), NativeCompatibility.CurrentStructHash.ToLowerInvariant() })
+{
+    Check(!NativeCompatibility.IsSupportedRuntimeHash(hash), "Missing, unknown or altered runtime hashes must be rejected.");
+    Check(!NativeCompatibility.IsSupportedBackupHash(hash), "Missing, unknown or altered backup hashes must be rejected.");
+}
+Console.WriteLine($"PASS: {checks} Monk, White Mage manual and Wrath layout, keyboard, restore, command and character detection checks.");

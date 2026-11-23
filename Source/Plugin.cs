@@ -48,11 +48,12 @@ public sealed class Plugin : IDalamudPlugin
         {
             using var stream = File.OpenRead(typeof(AddonConfig).Assembly.Location);
             var hash = Convert.ToHexString(SHA256.HashData(stream));
-            compatibilityError = hash == NativeLayout.StructHash ? "" : "Your Dalamud build uses a different HUD storage format. This package needs a matching build before it can apply or restore layouts.";
+            compatibilityError = NativeCompatibility.IsSupportedRuntimeHash(hash) ? "" : "Your Dalamud build uses a different HUD storage format. This package needs a matching build before it can apply or restore layouts.";
         }
         catch (Exception ex) { compatibilityError = $"Could not verify compatibility: {ex.Message}"; }
         Commands.AddHandler("/monklayout", new CommandInfo((_, _) => OpenPreset(JobPreset.Monk)) { HelpMessage = "Open the Monk HUD and hotbar preset." });
         Commands.AddHandler("/whmlayout", new CommandInfo((_, _) => OpenPreset(JobPreset.WhiteMage)) { HelpMessage = "Open the White Mage HUD and hotbar preset." });
+        Commands.AddHandler("/whmwrath", new CommandInfo((_, _) => OpenPreset(JobPreset.WhiteMageWrath)) { HelpMessage = "Open the White Mage hotbar preset for Wrath Combo." });
         if (Objects.LocalPlayer?.ClassJob.RowId == 24) SelectPreset(JobPreset.WhiteMage);
         Interface.UiBuilder.Draw += Draw;
         Interface.UiBuilder.OpenMainUi += Open;
@@ -63,11 +64,13 @@ public sealed class Plugin : IDalamudPlugin
     private void SelectPreset(JobPreset value)
     {
         preset = value;
-        status = $"Switch to your level 100 {preset.Name}, then press Apply {preset.Name} layout.";
+        status = $"Switch to your level 100 {preset.Name}, then press Apply {preset.ProfileName} layout.";
     }
 
     private void OpenPreset(JobPreset value) { if (busy || pending != 0) return; SelectPreset(value); open = true; }
-    private void Open() => OpenPreset(Objects.LocalPlayer?.ClassJob.RowId == 24 ? JobPreset.WhiteMage : JobPreset.Monk);
+    private void Open() => OpenPreset(Objects.LocalPlayer?.ClassJob.RowId == 24
+        ? preset.UsesWrath ? JobPreset.WhiteMageWrath : JobPreset.WhiteMage
+        : JobPreset.Monk);
     private string CharacterDirectory => characterId != 0
         ? Path.Combine(directory, characterId.ToString("X16"))
         : throw new InvalidOperationException("The character identity has not been verified yet. No settings were changed.");
@@ -86,15 +89,17 @@ public sealed class Plugin : IDalamudPlugin
     {
         if (!open) return;
         viewport = ImGui.GetMainViewport().Size;
-        ImGui.SetNextWindowSize(new Vector2(740, 650), ImGuiCond.FirstUseEver);
+        ImGui.SetNextWindowSize(new Vector2(780, Math.Min(780, viewport.Y - 60)), ImGuiCond.FirstUseEver);
         if (ImGui.Begin("Monk and White Mage Layouts###MonkLayout", ref open))
         {
-            ImGui.TextUnformatted($"{preset.Name} Layout {PluginVersion} | Keyboard and mouse | PvE");
+            ImGui.TextUnformatted($"{preset.ProfileName} Layout {PluginVersion} | Keyboard and mouse | PvE");
             ImGui.TextWrapped(ReadSession().Summary);
             ImGui.BeginDisabled(busy || pending != 0);
             if (ImGui.RadioButton("Monk", preset == JobPreset.Monk)) SelectPreset(JobPreset.Monk);
             ImGui.SameLine();
-            if (ImGui.RadioButton("White Mage", preset == JobPreset.WhiteMage)) SelectPreset(JobPreset.WhiteMage);
+            if (ImGui.RadioButton("White Mage manual", preset == JobPreset.WhiteMage)) SelectPreset(JobPreset.WhiteMage);
+            ImGui.SameLine();
+            if (ImGui.RadioButton("White Mage Wrath", preset == JobPreset.WhiteMageWrath)) SelectPreset(JobPreset.WhiteMageWrath);
             ImGui.EndDisabled();
             ImGui.Separator();
             ImGui.TextWrapped($"{preset.Description} Uses HUD layout {preset.HudLayout + 1} and {preset.Name} hotbars 1-3. Bars 1-3 become unshared; sharing is a character-wide setting.");
@@ -108,10 +113,15 @@ public sealed class Plugin : IDalamudPlugin
             ImGui.SliderFloat("Row spacing", ref rowGap, 0, 16, "%.0f");
             ImGui.TextWrapped("Compact spacing groups the hotbars, HP and job gauge together. Press Apply after adjusting either slider. Ctrl+Z/X/C/V remain available for clipboard shortcuts.");
             ImGui.TextWrapped($"The first backup for each job stays on this PC. Restore original settings returns HUD {preset.HudLayout + 1}, this job's bars and any changed keys to that job's backup. You can disable the plugin after applying.");
+            if (preset.UsesWrath)
+            {
+                ImGui.TextWrapped("Both White Mage profiles share HUD 3 and the same original White Mage backup. Applying this profile replaces the manual profile's hotbar arrangement.");
+                DrawWrathControls();
+            }
             ImGui.Spacing();
             if (compatibilityError.Length > 0) ImGui.TextWrapped(compatibilityError);
             ImGui.BeginDisabled(busy || pending != 0 || compatibilityError.Length > 0);
-            if (ImGui.Button($"Apply {preset.Name} layout", new Vector2(225, 36))) pending = 1;
+            if (ImGui.Button($"Apply {preset.ProfileName} layout", new Vector2(255, 36))) pending = 1;
             ImGui.SameLine();
             ImGui.BeginDisabled(characterId == 0 || !File.Exists(OriginalPath));
             if (ImGui.Button("Restore original settings", new Vector2(225, 36))) pending = 2;
@@ -146,6 +156,40 @@ public sealed class Plugin : IDalamudPlugin
         ImGui.End();
     }
 
+    private void DrawWrathControls()
+    {
+        ImGui.Spacing();
+        ImGui.Separator();
+        ImGui.TextUnformatted("Wrath Combo setup");
+        ImGui.TextWrapped("Enable four Wrath combos with Auto-Mode: single-target damage, AoE damage, single-target healing and AoE healing. Keep their replacement buttons set to Stone/Glare, Holy, Cure and Medica.");
+        ImGui.TextWrapped("Keys 1-4 are manual combo backups. Auto-Rotation does not need you to press them. To reserve Swiftcast for Raise, turn off Swift Holy Pull Opener Option and turn on Require Swiftcast/Dualcast under Auto-Resurrect.");
+        ImGui.TextWrapped("Apply sets the layout. Use these buttons to configure or pause Wrath.");
+        ImGui.BeginDisabled(busy || pending != 0);
+        if (ImGui.Button(WrathControls.OpenAutoSettings.Label)) SendWrathCommand(WrathControls.OpenAutoSettings);
+        ImGui.SameLine();
+        if (ImGui.Button(WrathControls.OpenWhiteMage.Label)) SendWrathCommand(WrathControls.OpenWhiteMage);
+        if (ImGui.Button(WrathControls.Pause.Label)) SendWrathCommand(WrathControls.Pause);
+        ImGui.SameLine();
+        if (ImGui.Button(WrathControls.Resume.Label)) SendWrathCommand(WrathControls.Resume);
+        ImGui.EndDisabled();
+        ImGui.TextWrapped("Use Pause Wrath before a manual action that automation may interfere with. Sprint V, Aetherial Shift X, Surecast Shift+X, Rescue Ctrl+F and Limit Break Ctrl+G remain available.");
+    }
+
+    private void SendWrathCommand(WrathControl control)
+    {
+        try
+        {
+            status = Commands.ProcessCommand(control.Command)
+                ? control.Confirmation
+                : "Wrath did not accept the command. Install or enable Wrath Combo, then try again.";
+        }
+        catch (Exception ex)
+        {
+            status = $"Could not send the Wrath command: {ex.Message}";
+            Log.Error(ex, "Wrath command failed");
+        }
+    }
+
     private void OnUpdate(IFramework _)
     {
         if (open || pending != 0)
@@ -159,7 +203,7 @@ public sealed class Plugin : IDalamudPlugin
         {
             if (compatibilityError.Length > 0) throw new InvalidOperationException(compatibilityError);
             var session = ReadSession();
-            Log.Information("Job Layout {Version}, preset {Job}: {Session}", PluginVersion, preset.Name, session.Summary);
+            Log.Information("Job Layout {Version}, preset {Profile}: {Session}", PluginVersion, preset.ProfileName, session.Summary);
             characterId = NativeLayout.CheckReady(session, Condition, Gui, preset, command == 1);
             Directory.CreateDirectory(JobDirectory);
             if (command == 1) Apply(); else Restore();
@@ -197,7 +241,8 @@ public sealed class Plugin : IDalamudPlugin
         try
         {
             NativeLayout.Apply(plan, before, GameConfig, keys, applyKeys, viewport.X, viewport.Y, size, globalScale, rowGap, preset);
-            status = $"Applied and verified: HUD {preset.HudLayout + 1}, all 36 {preset.Name} slots, and the selected keyboard changes. Your original settings are backed up.";
+            status = $"Applied and verified: {preset.ProfileName}, HUD {preset.HudLayout + 1}, all 36 hotbar slots, and the selected keyboard changes. Your original settings are backed up.";
+            if (preset.UsesWrath) status += " Configure and enable the four combos in Wrath separately.";
             Chat.Print($"[{preset.Name} Layout] {status}");
         }
         catch (Exception applyError)
@@ -260,5 +305,6 @@ public sealed class Plugin : IDalamudPlugin
         Interface.UiBuilder.OpenConfigUi -= Open;
         Commands.RemoveHandler("/monklayout");
         Commands.RemoveHandler("/whmlayout");
+        Commands.RemoveHandler("/whmwrath");
     }
 }

@@ -15,8 +15,8 @@ public sealed record ResolvedAction(ActionSpec Spec, RaptureHotbarModule.HotbarS
 
 internal static unsafe class NativeLayout
 {
-    internal const string StructHash = "F5A2C68CCECD3E199BDA572050E98902B2E7594066C95DC7826C2D4297CD0564";
-    internal const string GameVersion = "2026.10.16.0000.0000";
+    internal const string StructHash = NativeCompatibility.CurrentStructHash;
+    internal const string GameVersion = NativeCompatibility.CurrentGameVersion;
     internal const int EntriesPerLayout = 112;
     private static readonly string[] UiOptions = ["HotbarCommon01", "HotbarCommon02", "HotbarCommon03", "HotbarLock", "HotbarDispRecastTime"];
     private static readonly string[] EssentialHud = ["_ActionBar", "_ActionBar01", "_ActionBar02", "_ParameterWidget", "_TargetInfo", "_TargetInfoMainTarget", "_TargetInfoBuffDebuff", "_TargetInfoCastBar"];
@@ -175,7 +175,7 @@ internal static unsafe class NativeLayout
     internal static void ValidateBackup(Backup backup, ulong character, JobPreset preset)
     {
         backup.CheckIdentity(character, preset);
-        if (character == 0 || backup.Schema != 1 || backup.StructHash != StructHash || backup.CharacterId != character
+        if (character == 0 || backup.Schema != 1 || !NativeCompatibility.IsSupportedBackupHash(backup.StructHash) || backup.CharacterId != character
             || backup.OriginalLayout is < 0 or > 3 || backup.HudLayouts.Length != 448 * sizeof(AddonConfigEntry)
             || backup.KeyCount != UIInputData.Instance()->NumKeybinds || backup.Keybinds.Length != backup.KeyCount * sizeof(Keybind))
             throw new InvalidOperationException("The backup does not match this character or the installed game data structures.");

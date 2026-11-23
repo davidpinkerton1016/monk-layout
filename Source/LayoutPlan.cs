@@ -23,6 +23,7 @@ public static class LayoutPlan
     public const float DefaultRowGap = 5;
     public static readonly ActionSpec[] Actions = Build();
     public static readonly ActionSpec[] WhiteMageActions = BuildWhiteMage();
+    public static readonly ActionSpec[] WhiteMageWrathActions = BuildWhiteMageWrath();
 
     private static ActionSpec[] Build()
     {
@@ -61,6 +62,29 @@ public static class LayoutPlan
         var labels = new Dictionary<string, string>
         {
             ["Stone"] = "Glare III", ["Aero"] = "Dia", ["Holy"] = "Holy III", ["Medica II"] = "Medica III"
+        };
+        return names.SelectMany((row, bar) => row.Select((name, slot) =>
+            new ActionSpec(bar, slot, name, name == null ? "Empty" : labels.GetValueOrDefault(name, name),
+                name is "Sprint" or "Limit Break", !(bar == 2 && slot >= 8)))).ToArray();
+    }
+
+    private static ActionSpec[] BuildWhiteMageWrath()
+    {
+        string?[][] names = [
+            ["Stone", "Holy", "Cure", "Medica", "Afflatus Solace", "Afflatus Rapture",
+             "Regen", "Swiftcast", "Benediction", "Aetherial Shift", "Esuna", "Sprint"],
+            ["Glare IV", "Afflatus Misery", "Presence of Mind", "Tetragrammaton", "Cure II", "Asylum",
+             "Divine Benison", "Thin Air", "Aquaveil", "Surecast", "Raise", "Lucid Dreaming"],
+            ["Medica II", "Cure III", "Plenary Indulgence", "Temperance", "Divine Caress", "Liturgy of the Bell",
+             "Rescue", "Limit Break", "Aero", "Assize", "Repose", null]
+        ];
+        var labels = new Dictionary<string, string>
+        {
+            ["Stone"] = "Glare III / ST damage combo",
+            ["Holy"] = "Holy III / AoE damage combo",
+            ["Cure"] = "Cure / ST heal combo",
+            ["Medica"] = "Medica / AoE heal combo",
+            ["Aero"] = "Dia", ["Medica II"] = "Medica III"
         };
         return names.SelectMany((row, bar) => row.Select((name, slot) =>
             new ActionSpec(bar, slot, name, name == null ? "Empty" : labels.GetValueOrDefault(name, name),
