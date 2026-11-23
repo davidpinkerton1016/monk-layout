@@ -1,6 +1,6 @@
 # White Mage layout for Wrath Combo
 
-Version 1.4.0.0. Update **Monk & White Mage Layouts** in `/xlplugins`, switch to level 100 White Mage in a town, then open `/whmwrath` and choose **Apply White Mage Wrath layout**.
+Version 1.4.0.1. Update **Monk & White Mage Layouts** in `/xlplugins`, switch to level 100 White Mage in a town, then open `/whmwrath` and choose **Apply White Mage Wrath layout**.
 
 This profile uses HUD 3 and White Mage hotbars 1-3. It keeps the compact spacing, centered lily gauge and nearby party list from the existing White Mage profile. Both White Mage profiles share the same original backup and restore history. `/whmlayout` still opens the manual profile.
 

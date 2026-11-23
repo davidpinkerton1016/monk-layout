@@ -1,10 +1,10 @@
 {
-  "version": "1.4.0.0",
+  "version": "1.4.0.1",
   "verified_on": "2026-11-23",
   "distribution": "Dalamud custom repository",
   "build_errors": 0,
   "build_warnings": 0,
-  "core_checks_passed": 268,
+  "core_checks_passed": 279,
   "target_dalamud_api": 15,
   "target_dalamud_version": "15.0.4.1",
   "target_game_version": "2026.11.03.0000.0000",
@@ -16,8 +16,8 @@
   "manifest_repository_consistency_passed": true,
   "package_binary_matches_release_build": true,
   "live_ffxiv_tested": false,
-  "plugin_sha256": "835dc2d11b796a94e851de86a44cd6975baebd550c87f986f2923bd883f74db7",
-  "package_sha256": "7cd120009fe99214093b83366ed6ff4082a620223b29efe2b121b2edce741c43",
+  "plugin_sha256": "1ef24461d19997f0f91e86b730749b155b72865a0df302a434372fd223328997",
+  "package_sha256": "3f677bed162c50817a3681760943ed5317bafd5e13823cfbc02fcae8e2ff77b5",
   "target_repository": "davidpinkerton1016/monk-layout",
   "repository": "https://github.com/davidpinkerton1016/monk-layout",
   "repository_url": "https://raw.githubusercontent.com/davidpinkerton1016/monk-layout/main/repo.json",
@@ -50,5 +50,23 @@
       "shares_original_white_mage_backup": true
     }
   },
-  "verification_scope": "Release compilation, portable behavioral checks, explicit native ABI and backup compatibility audit, and package/index validation. No live FFXIV session was available."
+  "verification_scope": "Release compilation, 279 portable checks, actual-binary startup regression using fake game services and the current Dalamud thread guard, previously audited native ABI and backup compatibility, and package/index validation. No live FFXIV session was available.",
+  "startup_regression": {
+    "prior_version": "1.4.0.0",
+    "prior_binary_thread_failure_reproduced": true,
+    "prior_error": "InvalidOperationException: Not on main thread!",
+    "current_constructor_passed": true,
+    "constructor_live_object_reads": 0,
+    "framework_update_registered": true,
+    "first_simulated_framework_update_passed": true,
+    "ui_open_uses_cache_without_live_object_reads": true,
+    "dispose_passed": true,
+    "test_uses_actual_plugin_binary": true,
+    "test_uses_current_dalamud_service_interfaces": true,
+    "off_thread_guard_uses_actual_dalamud_implementation": true,
+    "game_services_are_fakes": true,
+    "native_game_pointers_are_not_exercised": true,
+    "harness": "StartupChecks",
+    "host_source_commit": "d0e93484f99fdb7d58b3a2f22152cf108f3486ff"
+  }
 }

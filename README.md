@@ -17,7 +17,13 @@ https://raw.githubusercontent.com/davidpinkerton1016/monk-layout/main/repo.json
 
 Dalamud handles the plugin installation and updates. The setup window includes a skill preview and an option to keep your existing keyboard bindings.
 
-## Version 1.4.0.0
+## Version 1.4.0.1
+
+Fixes a startup failure on current Dalamud. Version 1.4.0.0 accessed the local character from the plugin constructor, but Dalamud constructs plugins on a background thread and restricts character access to its main thread. The plugin now reads session data during framework updates and uses a cached snapshot for the setup window.
+
+Update through `/xlplugins`, confirm **1.4.0.1**, then open `/whmwrath`. The repository URL stays the same.
+
+### Version 1.4.0.0
 
 Adds a separate **White Mage Wrath** profile through `/whmwrath`. Its four Wrath combo buttons use 1-4, with Solace on 5 and Rapture on R. V remains Sprint, X remains Aetherial Shift, and Shift+X remains Surecast. All 35 White Mage actions remain available. The original White Mage manual profile and Monk profile are also available.
 
@@ -65,7 +71,7 @@ Hotbars 1–3 become unshared, which is a character-wide setting. Optional keybo
 
 This release targets Dalamud API 15, Dalamud 15.0.4.1, and game version 2026.11.03.0000.0000. A native-library compatibility check stops layout edits when the installed UI structures differ. Native game updates can require a new build.
 
-The plugin compiles and its portable checks pass, including action coverage, shared keyboard assignments, job checks, White Mage profile switching, backup identity and compatibility with legacy Monk backups. The package and repository index are validated before publication. The Monk preset through 1.2.0.0 was reported to apply successfully in game. The new White Mage Wrath profile has not been tested in a live FFXIV session. Validation details are recorded in `VALIDATION.json`.
+The plugin compiles and all 279 portable checks pass, including action coverage, shared keyboard assignments, job checks, White Mage profile switching, backup identity, legacy Monk backups and cached session behavior. A separate startup test loads the actual plugin binary with fake game services and Dalamud's real thread guard: it reproduces the 1.4.0.0 constructor failure and verifies the corrected constructor, framework update, window-open callback and disposal. The package and repository index are validated before publication. The Monk preset through 1.2.0.0 was reported to apply successfully in game. The new White Mage Wrath profile has not been tested in a live FFXIV session. Validation details are recorded in `VALIDATION.json`.
 
 Backups stay on the player's computer inside the plugin configuration directory. The plugin does not upload settings or make network requests.
 

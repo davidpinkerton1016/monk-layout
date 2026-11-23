@@ -266,4 +266,49 @@ foreach (var hash in new string?[] { null, "", new string('0', 64), NativeCompat
     Check(!NativeCompatibility.IsSupportedRuntimeHash(hash), "Missing, unknown or altered runtime hashes must be rejected.");
     Check(!NativeCompatibility.IsSupportedBackupHash(hash), "Missing, unknown or altered backup hashes must be rejected.");
 }
-Console.WriteLine($"PASS: {checks} Monk, White Mage manual and Wrath layout, keyboard, restore, command and character detection checks.");
+var liveReadCount = 0;
+var inFrameworkUpdate = false;
+var liveSession = whiteMage;
+var sessionCache = new SessionCache(() =>
+{
+    liveReadCount++;
+    if (!inFrameworkUpdate) throw new InvalidOperationException("Not on main thread!");
+    return liveSession;
+});
+Check(liveReadCount == 0, "Constructing session state on the plugin loader thread must not read game data.");
+Check(!sessionCache.Snapshot.IsAvailable && sessionCache.Snapshot.Session == default,
+    "Before the first framework update, UI callbacks must receive an unavailable snapshot.");
+_ = sessionCache.Snapshot.Error;
+Check(liveReadCount == 0, "Reading cached UI state must not trigger a live player lookup.");
+inFrameworkUpdate = true;
+sessionCache.Refresh();
+var firstSnapshot = sessionCache.Snapshot;
+Check(liveReadCount == 1 && firstSnapshot.IsAvailable && firstSnapshot.Session == whiteMage,
+    "One framework refresh must capture exactly one coherent live session.");
+inFrameworkUpdate = false;
+Check(sessionCache.Snapshot.Session.JobId == 24 && liveReadCount == 1,
+    "A later UI callback must be able to read White Mage state without accessing game objects.");
+liveSession = monk;
+inFrameworkUpdate = true;
+sessionCache.Refresh();
+Check(sessionCache.Snapshot.Session == monk && liveReadCount == 2,
+    "A new framework tick must replace the cached session after a job change.");
+Check(firstSnapshot.Session == whiteMage && !ReferenceEquals(firstSnapshot, sessionCache.Snapshot),
+    "A published snapshot must remain immutable while a new snapshot replaces it atomically.");
+inFrameworkUpdate = false;
+sessionCache.Refresh();
+Check(!sessionCache.Snapshot.IsAvailable && sessionCache.Snapshot.Session == default,
+    "A failed live read must invalidate stale character and job data before any operation.");
+Check(sessionCache.Snapshot.Error.Contains("Not on main thread!"),
+    "A rejected framework read must retain a diagnostic message for the setup window.");
+inFrameworkUpdate = true;
+liveSession = default;
+sessionCache.Refresh();
+Check(sessionCache.Snapshot.IsAvailable && !sessionCache.Snapshot.Session.IsLoggedIn,
+    "A valid logged-out snapshot must clear previously cached character information.");
+liveSession = whiteMage;
+sessionCache.Refresh();
+Check(sessionCache.Snapshot.IsAvailable && sessionCache.Snapshot.Error.Length == 0
+    && sessionCache.Snapshot.Session == whiteMage,
+    "The cache must recover on a later valid framework update without reloading the plugin.");
+Console.WriteLine($"PASS: {checks} Monk, White Mage manual and Wrath layout, keyboard, restore, command, character detection and startup session checks.");

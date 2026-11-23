@@ -35,6 +35,8 @@ public sealed class Plugin : IDalamudPlugin
     private int pending;
     private bool busy;
     private ulong characterId;
+    private bool initialPresetChosen;
+    private readonly SessionCache sessionState = new(ReadLiveSessionOnFramework);
     private JobPreset preset = JobPreset.Monk;
     private string status = "Log in as your level 100 Monk, then press Apply Monk layout.";
     private readonly string compatibilityError;
@@ -54,7 +56,6 @@ public sealed class Plugin : IDalamudPlugin
         Commands.AddHandler("/monklayout", new CommandInfo((_, _) => OpenPreset(JobPreset.Monk)) { HelpMessage = "Open the Monk HUD and hotbar preset." });
         Commands.AddHandler("/whmlayout", new CommandInfo((_, _) => OpenPreset(JobPreset.WhiteMage)) { HelpMessage = "Open the White Mage HUD and hotbar preset." });
         Commands.AddHandler("/whmwrath", new CommandInfo((_, _) => OpenPreset(JobPreset.WhiteMageWrath)) { HelpMessage = "Open the White Mage hotbar preset for Wrath Combo." });
-        if (Objects.LocalPlayer?.ClassJob.RowId == 24) SelectPreset(JobPreset.WhiteMage);
         Interface.UiBuilder.Draw += Draw;
         Interface.UiBuilder.OpenMainUi += Open;
         Interface.UiBuilder.OpenConfigUi += Open;
@@ -63,14 +64,23 @@ public sealed class Plugin : IDalamudPlugin
 
     private void SelectPreset(JobPreset value)
     {
+        initialPresetChosen = true;
         preset = value;
         status = $"Switch to your level 100 {preset.Name}, then press Apply {preset.ProfileName} layout.";
     }
 
     private void OpenPreset(JobPreset value) { if (busy || pending != 0) return; SelectPreset(value); open = true; }
-    private void Open() => OpenPreset(Objects.LocalPlayer?.ClassJob.RowId == 24
-        ? preset.UsesWrath ? JobPreset.WhiteMageWrath : JobPreset.WhiteMage
-        : JobPreset.Monk);
+    private void Open()
+    {
+        if (busy || pending != 0) return;
+        var snapshot = sessionState.Snapshot;
+        if (snapshot.IsAvailable && snapshot.Session.HasLocalPlayer)
+            OpenPreset(snapshot.Session.JobId == 24
+                ? preset.UsesWrath ? JobPreset.WhiteMageWrath : JobPreset.WhiteMage
+                : JobPreset.Monk);
+        else
+            open = true;
+    }
     private string CharacterDirectory => characterId != 0
         ? Path.Combine(directory, characterId.ToString("X16"))
         : throw new InvalidOperationException("The character identity has not been verified yet. No settings were changed.");
@@ -78,8 +88,10 @@ public sealed class Plugin : IDalamudPlugin
     private string OriginalPath => Path.Combine(JobDirectory, "original-settings.json");
     private string StatePath => Path.Combine(JobDirectory, "install-state.json");
 
-    private static PlayerSession ReadSession()
+    private static PlayerSession ReadLiveSessionOnFramework()
     {
+        if (!Framework.IsInFrameworkUpdateThread)
+            throw new InvalidOperationException("Player data must be read from the framework update.");
         var local = Objects.LocalPlayer;
         return new(Client.IsLoggedIn, local != null, local?.ClassJob.RowId ?? 0, local?.Level ?? 0,
             Player.IsLoaded, Player.ClassJob.RowId, Player.EffectiveLevel, Player.IsLevelSynced, Player.ContentId);
@@ -93,7 +105,8 @@ public sealed class Plugin : IDalamudPlugin
         if (ImGui.Begin("Monk and White Mage Layouts###MonkLayout", ref open))
         {
             ImGui.TextUnformatted($"{preset.ProfileName} Layout {PluginVersion} | Keyboard and mouse | PvE");
-            ImGui.TextWrapped(ReadSession().Summary);
+            var snapshot = sessionState.Snapshot;
+            ImGui.TextWrapped(snapshot.IsAvailable ? snapshot.Session.Summary : snapshot.Error);
             ImGui.BeginDisabled(busy || pending != 0);
             if (ImGui.RadioButton("Monk", preset == JobPreset.Monk)) SelectPreset(JobPreset.Monk);
             ImGui.SameLine();
@@ -121,10 +134,10 @@ public sealed class Plugin : IDalamudPlugin
             ImGui.Spacing();
             if (compatibilityError.Length > 0) ImGui.TextWrapped(compatibilityError);
             ImGui.BeginDisabled(busy || pending != 0 || compatibilityError.Length > 0);
-            if (ImGui.Button($"Apply {preset.ProfileName} layout", new Vector2(255, 36))) pending = 1;
+            if (ImGui.Button($"Apply {preset.ProfileName} layout", new Vector2(255, 36))) { initialPresetChosen = true; pending = 1; }
             ImGui.SameLine();
             ImGui.BeginDisabled(characterId == 0 || !File.Exists(OriginalPath));
-            if (ImGui.Button("Restore original settings", new Vector2(225, 36))) pending = 2;
+            if (ImGui.Button("Restore original settings", new Vector2(225, 36))) { initialPresetChosen = true; pending = 2; }
             ImGui.EndDisabled();
             ImGui.EndDisabled();
             ImGui.Spacing();
@@ -192,9 +205,14 @@ public sealed class Plugin : IDalamudPlugin
 
     private void OnUpdate(IFramework _)
     {
+        sessionState.Refresh();
+        var snapshot = sessionState.Snapshot;
+        if (!initialPresetChosen && pending == 0 && !busy && snapshot.IsAvailable
+            && snapshot.Session.IsLoggedIn && snapshot.Session.HasLocalPlayer && snapshot.Session.JobId != 0)
+            SelectPreset(snapshot.Session.JobId == 24 ? JobPreset.WhiteMage : JobPreset.Monk);
         if (open || pending != 0)
         {
-            try { characterId = compatibilityError.Length == 0 ? NativeLayout.GetLoadedCharacterId(ReadSession()) : 0; }
+            try { characterId = compatibilityError.Length == 0 && snapshot.IsAvailable ? NativeLayout.GetLoadedCharacterId(snapshot.Session) : 0; }
             catch { characterId = 0; } // The operation below reports any readiness error.
         }
         if (pending == 0 || busy) return;
@@ -202,7 +220,8 @@ public sealed class Plugin : IDalamudPlugin
         try
         {
             if (compatibilityError.Length > 0) throw new InvalidOperationException(compatibilityError);
-            var session = ReadSession();
+            if (!snapshot.IsAvailable) throw new InvalidOperationException(snapshot.Error);
+            var session = snapshot.Session;
             Log.Information("Job Layout {Version}, preset {Profile}: {Session}", PluginVersion, preset.ProfileName, session.Summary);
             characterId = NativeLayout.CheckReady(session, Condition, Gui, preset, command == 1);
             Directory.CreateDirectory(JobDirectory);

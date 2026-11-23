@@ -10,5 +10,6 @@
     <Compile Include="../Source/JobPreset.cs" Link="JobPreset.cs" />
     <Compile Include="../Source/WrathControls.cs" Link="WrathControls.cs" />
     <Compile Include="../Source/NativeCompatibility.cs" Link="NativeCompatibility.cs" />
+    <Compile Include="../Source/SessionCache.cs" Link="SessionCache.cs" />
   </ItemGroup>
 </Project>
